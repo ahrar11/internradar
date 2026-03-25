@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Search — InternRadar</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div id="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-hex">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" fill="currentColor"/></svg>
+      </div>
+      <div>
+        <div class="logo-name">InternRadar</div>
+        <div class="logo-sub">BU Questrom · MSBA '25</div>
+      </div>
+    </div>
+    <div class="nav-section-label">Workspace</div>
+    <a href="../index.html" class="nav-item">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+      Dashboard
+    </a>
+    <a href="search.html" class="nav-item active">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M13 13L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Job Search
+    </a>
+    <a href="tracker.html" class="nav-item">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="15" r="3" stroke="currentColor" stroke-width="1.4"/></svg>
+      Application Tracker
+    </a>
+    <a href="resume.html" class="nav-item">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="4" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Resume Tailor
+    </a>
+    <div class="nav-section-label" style="margin-top:auto">Settings</div>
+    <a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      My Profile
+    </a>
+    <a href="settings.html" class="nav-item">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Settings
+    </a>
+  </nav>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div>
+        <h1 class="page-title">Job Search</h1>
+        <p class="page-sub">AI-powered daily search tailored to your MSBA profile.</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="visa-badge">✓ F1/CPT/OPT filter ON</div>
+        <button class="btn-primary" id="run-btn" onclick="runSearch()">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10L14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Search Now
+        </button>
+      </div>
+    </div>
+
+    <div class="search-layout">
+      <!-- Filter sidebar -->
+      <div class="search-sidebar">
+        <div class="search-sidebar-title">Search Filters</div>
+
+        <div class="field-group">
+          <div class="field-label">Location</div>
+          <select class="field-select" id="f-location">
+            <option value="any">Any / Remote OK</option>
+            <option value="Boston MA">Boston, MA</option>
+            <option value="New York NY">New York, NY</option>
+            <option value="San Francisco CA">San Francisco, CA</option>
+            <option value="Chicago IL">Chicago, IL</option>
+            <option value="Remote">Remote only</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Industry</div>
+          <select class="field-select" id="f-industry">
+            <option value="any">All Industries</option>
+            <option value="Tech / Software">Tech / Software</option>
+            <option value="Finance / Banking">Finance / Banking</option>
+            <option value="Consulting">Consulting</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Retail / E-commerce">Retail / E-commerce</option>
+            <option value="Manufacturing">Manufacturing / Supply Chain</option>
+            <option value="Media / Advertising">Media / Advertising</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Role Types</div>
+          <div class="chip-group" id="role-chips">
+            <button class="chip" data-role="data analyst">Data Analyst</button>
+            <button class="chip" data-role="business analyst">Business Analyst</button>
+            <button class="chip" data-role="data science">Data Science</button>
+            <button class="chip" data-role="product analytics">Product Analytics</button>
+            <button class="chip" data-role="strategy analytics">Strategy & Analytics</button>
+            <button class="chip" data-role="operations analytics">Operations Analytics</button>
+            <button class="chip" data-role="finance analytics">Finance Analytics</button>
+            <button class="chip" data-role="marketing analytics">Marketing Analytics</button>
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-top:8px">
+          <div class="field-label">Extra Keywords</div>
+          <input type="text" class="field-input" id="f-keywords" placeholder="Python, SQL, Tableau...">
+        </div>
+
+        <hr class="section-divider">
+
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-bottom:10px">AI LEARNING STATUS</div>
+        <div id="learn-summary" style="font-size:12px;color:var(--text2)">Loading...</div>
+
+        <hr class="section-divider">
+        <button class="btn-secondary" style="width:100%;justify-content:center" onclick="saveFilters()">Save as defaults</button>
+      </div>
+
+      <!-- Results column -->
+      <div>
+        <div id="error-banner" class="error-banner"></div>
+
+        <div id="loading-wrap" class="loading-wrap">
+          <div class="spinner"></div>
+          <div class="loading-msg">Finding internships with live web search...</div>
+          <div class="loading-ticker" id="search-ticker"></div>
+        </div>
+
+        <div id="results-header" style="display:none;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12px;font-family:var(--font-mono);color:var(--text3)">
+            Found <span id="result-count" style="color:var(--accent)">0</span> roles
+            <span id="last-search-label"></span>
+          </div>
+          <button class="btn-ghost" onclick="clearResults()">Clear results</button>
+        </div>
+
+        <div class="jobs-list" id="jobs-list">
+          <div class="panel">
+            <div class="empty-state">
+              <div class="empty-icon">◈</div>
+              <div class="empty-title">Configure filters and run a search</div>
+              <div class="empty-desc">The AI will scan LinkedIn, Indeed, Handshake, and company career pages for Summer 2026 internships open to international students.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/app.js"></script>
+<script>
+const TICKER_MSGS = [
+  'Querying LinkedIn & Handshake...',
+  'Scanning Indeed & Glassdoor...',
+  'Checking company career pages...',
+  'Filtering for F1/CPT/OPT eligibility...',
+  'Scoring matches against your profile...',
+  'Applying learned preferences...',
+  'Ranking by fit score...',
+];
+
+let searchTicker;
+
+function initSearch() {
+  // Load saved prefs
+  const prefs = Store.getPrefs();
+  el('f-location').value = prefs.location || 'any';
+  el('f-industry').value = prefs.industry || 'any';
+  el('f-keywords').value = prefs.keywords || '';
+
+  // Set chips
+  document.querySelectorAll('.chip').forEach(c => {
+    if ((prefs.roles || []).includes(c.dataset.role)) c.classList.add('active');
+  });
+  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('active')));
+
+  // Learning summary
+  const lp = Store.getTopPreferences();
+  el('learn-summary').innerHTML = lp.total === 0
+    ? '<span style="color:var(--text3)">No data yet. Apply/save roles to train the AI.</span>'
+    : `${lp.total} interactions recorded.<br>Top role: <span style="color:var(--accent)">${lp.roles[0]?.label || '—'}</span>`;
+
+  // Load cached results
+  const cached = Store.getJobs();
+  if (cached.length) renderResults(cached);
+}
+
+function getSelectedRoles() {
+  return [...document.querySelectorAll('.chip.active')].map(c => c.dataset.role);
+}
+
+function saveFilters() {
+  Store.setPrefs({
+    roles: getSelectedRoles(),
+    location: el('f-location').value,
+    industry: el('f-industry').value,
+    keywords: el('f-keywords').value.trim(),
+    visaFilter: true,
+  });
+  const btn = event.target;
+  btn.textContent = '✓ Saved';
+  setTimeout(() => btn.textContent = 'Save as defaults', 1500);
+}
+
+async function runSearch() {
+  if (!Store.getApiKey()) {
+    el('error-banner').textContent = '⚠ API key missing — go to Settings to add your Anthropic API key.';
+    el('error-banner').classList.add('show');
+    return;
+  }
+
+  const roles = getSelectedRoles();
+  if (!roles.length) { alert('Please select at least one role type.'); return; }
+
+  const location  = el('f-location').value;
+  const industry  = el('f-industry').value;
+  const keywords  = el('f-keywords').value.trim();
+  const learnCtx  = Store.getLearningPromptContext();
+  const resume    = Store.getResume();
+
+  el('run-btn').disabled = true;
+  el('loading-wrap').classList.add('show');
+  el('error-banner').classList.remove('show');
+  el('jobs-list').innerHTML = '';
+  el('results-header').style.display = 'none';
+
+  searchTicker = startTicker('search-ticker', TICKER_MSGS);
+
+  const resumeContext = resume ? `\nStudent resume excerpt (top skills/experience):\n${resume.text.slice(0, 800)}` : '';
+
+  const prompt = `You are an expert internship job search assistant.
+
+STUDENT PROFILE:
+- Program: MS Business Analytics, Boston University Questrom School of Business
+- Graduation: December 2025
+- Visa: F1 student — MUST work only at companies that sponsor CPT, OPT, or H1-B. This is a hard filter.
+- Core skills: Python, SQL, R, Tableau, Power BI, Excel, statistics, data visualization, regression, machine learning basics
+- Target: Summer 2026 internship ONLY (not full-time, not fall/spring co-op)
+${resumeContext}
+
+SEARCH CRITERIA:
+- Role types: ${roles.join(', ')}
+- Location preference: ${location === 'any' ? 'any US location or remote' : location}
+- Industry: ${industry === 'any' ? 'any industry' : industry}
+${keywords ? `- Extra keywords: ${keywords}` : ''}
+- Summer 2026 ONLY
+- MUST be open to international students (F1/CPT/OPT)
+${learnCtx}
+
+Search job boards right now (LinkedIn, Indeed, Handshake, Glassdoor, Wellfound, company career pages) and find 10-14 real, active Summer 2026 internship postings.
+
+Return ONLY a valid JSON array with no markdown, no preamble. Each object must have:
+{
+  "id": "unique short string",
+  "company": "Company Name",
+  "title": "Exact job title",
+  "location": "City, State or Remote",
+  "industry": "industry category",
+  "url": "direct link to posting or careers page",
+  "summary": "2-3 sentence description of the role and why it fits this student",
+  "skills": ["skill1","skill2","skill3","skill4"],
+  "match_score": "high|medium|new",
+  "posted": "e.g. Mar 2025 or Recent",
+  "deadline": "deadline date string or null",
+  "source": "LinkedIn|Indeed|Handshake|Glassdoor|Company Site",
+  "visa_friendly": true
+}
+
+Only include real, active roles. visa_friendly must be true for all results.`;
+
+  try {
+    const text = await callClaude({ prompt, useSearch: true, maxTokens: 5000 });
+    const jobs = extractJSON(text);
+    const tagged = jobs.map(j => ({ ...j, id: j.id || generateId() }));
+    Store.setJobs(tagged);
+    renderResults(tagged);
+  } catch(err) {
+    el('error-banner').textContent = '⚠ ' + err.message;
+    el('error-banner').classList.add('show');
+    el('jobs-list').innerHTML = `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">Search failed</div><div class="empty-desc">Check your API key in Settings and try again.</div></div></div>`;
+  } finally {
+    el('run-btn').disabled = false;
+    el('loading-wrap').classList.remove('show');
+    clearInterval(searchTicker);
+  }
+}
+
+function renderResults(jobs) {
+  el('result-count').textContent = jobs.length;
+  const ls = Store.getLastSearch();
+  el('last-search-label').textContent = ls ? ` · ${fmt(ls)}` : '';
+  el('results-header').style.display = 'flex';
+  el('jobs-list').innerHTML = jobs.length
+    ? jobs.map(j => renderJobCard(j)).join('')
+    : `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">No results</div><div class="empty-desc">Try broadening your filters.</div></div></div>`;
+}
+
+function clearResults() {
+  Store.setJobs([]);
+  el('jobs-list').innerHTML = `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">Results cleared</div><div class="empty-desc">Run a new search to find fresh roles.</div></div></div>`;
+  el('results-header').style.display = 'none';
+}
+
+initSearch();
+</script>
+</body>
+</html>
