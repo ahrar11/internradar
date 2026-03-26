@@ -202,7 +202,76 @@ function showConnectionsPopup(company, peopleJSON) {
 }
 
 // ---- Resume tailor modal ----
-function openTailorModal(job) {
+function buildTailorPrompt(resume, job, jdOverride) {
+  const jd = jdOverride || `${job.title} at ${job.company}. Required skills: ${(job.skills||[]).join(', ')}. ${job.summary||''}`;
+  return `You are a senior recruiter and resume strategist at a top-tier firm. Your task is to tailor a student's resume for a specific role.
+
+═══════════════════════════════════════════
+STUDENT'S MASTER RESUME (source of truth):
+═══════════════════════════════════════════
+${resume.text}
+
+═══════════════════════════════════════════
+TARGET ROLE:
+═══════════════════════════════════════════
+Company: ${job.company || 'Unknown'}
+Title: ${job.title || 'Internship'}
+Job Description: ${jd}
+
+═══════════════════════════════════════════
+STRICT RULES — violating any of these is a failure:
+═══════════════════════════════════════════
+1. ZERO FABRICATION: You may ONLY use information that exists verbatim in the student's master resume above. Do NOT add any company names, project names, tools, technologies, metrics, achievements, responsibilities, or skills that are not already present in the resume. If a skill is not in the resume, do not add it. If a project is not in the resume, do not add it. If a metric is not in the resume, do not invent one.
+
+2. REWRITING IS ALLOWED: You MAY rephrase existing bullet points using stronger language, reorder bullets within a role, reorder sections, cut irrelevant bullets, and restructure sentences — as long as the underlying facts remain identical.
+
+3. STAR FORMAT: For every work experience and project bullet point, rewrite it in STAR format (Situation/Task → Action → Result). Pattern: "[Strong action verb] + [what you did, be specific] + [quantified result or impact if available in original]". If no result is stated in the original, end with the action — do not invent a result.
+
+4. ATS OPTIMIZATION: Mirror the exact keywords from the job description wherever they are genuinely supported by the student's existing experience. Place the most relevant skills and experience first.
+
+5. PROFESSIONAL SUMMARY: Write a 3-line summary at the top. Line 1: student's degree + university + graduation. Line 2: 2-3 most relevant skills for this specific role (only from their actual skills). Line 3: one sentence on what value they bring to this specific role. Do NOT use generic phrases like "hardworking" or "passionate".
+
+6. LENGTH: Strictly 1 page. If there's too much content, cut the LEAST relevant bullets first. Never cut Education or Skills. Prefer depth (2-3 strong bullets) over breadth (5 weak bullets) per role.
+
+7. SKILLS SECTION: Only list skills that appear in the original resume. Group them: Languages | Tools & Platforms | Methods. Bold or surface the ones that match the JD.
+
+8. SECTION ORDER (optimize for this role): SUMMARY → EDUCATION → most relevant section first (EXPERIENCE or PROJECTS depending on which is stronger for this JD) → SKILLS
+
+═══════════════════════════════════════════
+OUTPUT FORMAT — return ONLY a JSON object, no markdown, no preamble:
+═══════════════════════════════════════════
+{
+  "name": "student full name",
+  "contact": "email | phone | linkedin | location",
+  "summary": ["line1", "line2", "line3"],
+  "education": [
+    { "school": "", "degree": "", "dates": "", "gpa": "", "coursework": "" }
+  ],
+  "experience": [
+    {
+      "company": "",
+      "title": "",
+      "dates": "",
+      "location": "",
+      "bullets": ["STAR bullet 1", "STAR bullet 2", "STAR bullet 3"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "",
+      "tech": "",
+      "bullets": ["STAR bullet 1", "STAR bullet 2"]
+    }
+  ],
+  "skills": {
+    "languages": "",
+    "tools": "",
+    "methods": ""
+  }
+}`;
+}
+
+function openTailorModal(job, jdOverride) {
   const resume = Store.getResume();
   if (!resume) { alert('Please upload your resume first in the Resume Tailor page.'); return; }
 
@@ -212,19 +281,23 @@ function openTailorModal(job) {
     modal.className = 'modal-backdrop';
     modal.id = 'tailor-modal';
     modal.innerHTML = `
-      <div class="modal">
+      <div class="modal" style="max-width:800px;width:95vw">
         <button class="modal-close" onclick="document.getElementById('tailor-modal').classList.remove('show')">✕</button>
         <div class="modal-title">✦ Tailored Resume</div>
-        <div class="modal-sub" id="tailor-modal-sub"></div>
+        <div class="modal-sub" id="tailor-modal-sub" style="margin-bottom:12px"></div>
         <div id="tailor-loading" class="loading-wrap show">
           <div class="spinner"></div>
-          <div class="loading-msg">Tailoring your resume to this role...</div>
+          <div class="loading-msg">Tailoring your resume — strictly using only your existing experience...</div>
           <div class="loading-ticker" id="tailor-ticker"></div>
         </div>
         <div id="tailor-output" style="display:none">
-          <pre class="tailored-resume-output" id="tailor-text"></pre>
-          <div class="modal-footer">
-            <button class="btn-ghost" onclick="copyTailored()">Copy to clipboard</button>
+          <div id="resume-preview-render" style="background:#fff;color:#111;padding:36px 40px;border-radius:8px;font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4;max-height:70vh;overflow-y:auto;border:1px solid #ddd"></div>
+          <div class="modal-footer" style="margin-top:16px">
+            <button class="btn-ghost" onclick="copyTailoredText()">Copy plain text</button>
+            <button class="btn-secondary" onclick="downloadTailoredPDF()">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M3 12h10M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download PDF
+            </button>
             <button class="btn-primary" onclick="document.getElementById('tailor-modal').classList.remove('show')">Done</button>
           </div>
         </div>
@@ -232,39 +305,41 @@ function openTailorModal(job) {
     document.body.appendChild(modal);
   }
 
-  el('tailor-modal-sub').textContent = `${job.title} at ${job.company}`;
+  el('tailor-modal-sub').textContent = `${job.title || 'Role'} at ${job.company || 'Company'}`;
   el('tailor-loading').classList.add('show');
   el('tailor-output').style.display = 'none';
   modal.classList.add('show');
 
-  const ticker = startTicker('tailor-ticker', ['Analyzing job requirements...','Matching your skills...','Rewriting bullet points...','Optimizing for ATS...','Finalizing...']);
+  const ticker = startTicker('tailor-ticker', [
+    'Reading your resume carefully...',
+    'Identifying matching experience...',
+    'Rewriting bullets in STAR format...',
+    'Cutting irrelevant content...',
+    'Optimizing ATS keywords...',
+    'Final quality check...',
+  ]);
 
-  const prompt = `You are an expert resume consultant for a graduate student.
-
-STUDENT RESUME:
-${resume.text}
-
-TARGET JOB:
-Company: ${job.company}
-Title: ${job.title}
-Location: ${job.location}
-Description: ${job.summary}
-Required Skills: ${(job.skills||[]).join(', ')}
-
-Rewrite and tailor the student's resume specifically for this role:
-- 1 page, clean plain text
-- Tailored 2-3 line professional summary at top
-- Reorder and rephrase bullet points to prioritize most relevant experience
-- Highlight skills that match the job requirements
-- Strong action verbs, quantify achievements where possible
-- Do NOT invent any experience — only rephrase what exists
-- Sections: SUMMARY | EDUCATION | EXPERIENCE | SKILLS | PROJECTS`;
-
-  callClaude({ prompt, useSearch: false, maxTokens: 2000 })
-    .then(text => {
+  callClaude({ prompt: buildTailorPrompt(resume, job, jdOverride), useSearch: false, maxTokens: 3000 })
+    .then(raw => {
       clearInterval(ticker);
+      // Parse JSON response
+      let data;
+      try {
+        const jsonMatch = raw.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('No JSON found');
+        data = JSON.parse(jsonMatch[0]);
+      } catch(e) {
+        // Fallback: render as plain text if JSON parse fails
+        el('resume-preview-render').innerHTML = `<pre style="font-family:monospace;font-size:10pt;white-space:pre-wrap">${esc(raw)}</pre>`;
+        el('tailor-loading').classList.remove('show');
+        el('tailor-output').style.display = 'block';
+        window._tailorRawText = raw;
+        return;
+      }
+      window._tailorData = data;
+      window._tailorRawText = renderResumeText(data);
+      el('resume-preview-render').innerHTML = renderResumeHTML(data, job);
       el('tailor-loading').classList.remove('show');
-      el('tailor-text').textContent = text;
       el('tailor-output').style.display = 'block';
     })
     .catch(err => {
@@ -274,8 +349,150 @@ Rewrite and tailor the student's resume specifically for this role:
     });
 }
 
-function copyTailored() {
-  navigator.clipboard.writeText(el('tailor-text')?.textContent || '').then(() => alert('Copied to clipboard!'));
+function renderResumeHTML(d, job) {
+  const jdKeywords = (job?.skills || []).map(s => s.toLowerCase());
+  const highlightKeyword = (text) => {
+    if (!jdKeywords.length) return esc(text);
+    let out = esc(text);
+    jdKeywords.forEach(kw => {
+      const re = new RegExp(`\\b(${kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})\\b`, 'gi');
+      out = out.replace(re, '<strong>$1</strong>');
+    });
+    return out;
+  };
+
+  const s = (str) => esc(str||'');
+
+  let html = `<div style="font-family:'Georgia',serif;color:#111;font-size:11pt;line-height:1.45">`;
+
+  // Header
+  html += `<div style="text-align:center;margin-bottom:14px;border-bottom:2px solid #222;padding-bottom:10px">
+    <div style="font-size:17pt;font-weight:700;letter-spacing:1px;text-transform:uppercase">${s(d.name)}</div>
+    <div style="font-size:9pt;color:#444;margin-top:4px;font-family:Arial,sans-serif">${s(d.contact)}</div>
+  </div>`;
+
+  // Summary
+  if (d.summary?.length) {
+    html += `<div style="margin-bottom:12px">
+      <div style="font-size:9pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#222;border-bottom:1px solid #ccc;margin-bottom:6px;padding-bottom:2px">Professional Summary</div>
+      <div style="font-size:10pt;color:#333;font-family:Arial,sans-serif;line-height:1.6">${d.summary.map(l => s(l)).join('<br>')}</div>
+    </div>`;
+  }
+
+  // Education
+  if (d.education?.length) {
+    html += `<div style="margin-bottom:12px">
+      <div style="font-size:9pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#222;border-bottom:1px solid #ccc;margin-bottom:6px;padding-bottom:2px">Education</div>`;
+    d.education.forEach(e => {
+      html += `<div style="display:flex;justify-content:space-between;font-family:Arial,sans-serif">
+        <div><span style="font-weight:600;font-size:10.5pt">${s(e.school)}</span> <span style="font-size:9.5pt;color:#444">· ${s(e.degree)}</span></div>
+        <div style="font-size:9.5pt;color:#555;white-space:nowrap">${s(e.dates)}</div>
+      </div>`;
+      if (e.gpa) html += `<div style="font-size:9.5pt;color:#444;font-family:Arial,sans-serif">GPA: ${s(e.gpa)}</div>`;
+      if (e.coursework) html += `<div style="font-size:9.5pt;color:#444;font-family:Arial,sans-serif;margin-top:2px"><em>Relevant Coursework:</em> ${s(e.coursework)}</div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Experience
+  if (d.experience?.length) {
+    html += `<div style="margin-bottom:12px">
+      <div style="font-size:9pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#222;border-bottom:1px solid #ccc;margin-bottom:6px;padding-bottom:2px">Experience</div>`;
+    d.experience.forEach(exp => {
+      html += `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-family:Arial,sans-serif">
+          <div><span style="font-weight:600;font-size:10.5pt">${s(exp.company)}</span><span style="font-size:9.5pt;color:#555"> · ${s(exp.title)}</span></div>
+          <div style="font-size:9.5pt;color:#555;white-space:nowrap">${s(exp.dates)} ${exp.location ? '· '+s(exp.location) : ''}</div>
+        </div>
+        <ul style="margin:4px 0 0 16px;padding:0;font-family:Arial,sans-serif;font-size:9.5pt">
+          ${(exp.bullets||[]).map(b => `<li style="margin-bottom:3px">${highlightKeyword(b)}</li>`).join('')}
+        </ul>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Projects
+  if (d.projects?.length) {
+    html += `<div style="margin-bottom:12px">
+      <div style="font-size:9pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#222;border-bottom:1px solid #ccc;margin-bottom:6px;padding-bottom:2px">Projects</div>`;
+    d.projects.forEach(proj => {
+      html += `<div style="margin-bottom:8px">
+        <div style="font-family:Arial,sans-serif"><span style="font-weight:600;font-size:10.5pt">${s(proj.name)}</span>${proj.tech ? ` <span style="font-size:9pt;color:#666">| ${s(proj.tech)}</span>` : ''}</div>
+        <ul style="margin:4px 0 0 16px;padding:0;font-family:Arial,sans-serif;font-size:9.5pt">
+          ${(proj.bullets||[]).map(b => `<li style="margin-bottom:3px">${highlightKeyword(b)}</li>`).join('')}
+        </ul>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Skills
+  if (d.skills) {
+    html += `<div>
+      <div style="font-size:9pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#222;border-bottom:1px solid #ccc;margin-bottom:6px;padding-bottom:2px">Skills</div>
+      <div style="font-family:Arial,sans-serif;font-size:9.5pt;line-height:1.8">`;
+    if (d.skills.languages) html += `<div><span style="font-weight:600">Languages & Querying:</span> ${highlightKeyword(d.skills.languages)}</div>`;
+    if (d.skills.tools)     html += `<div><span style="font-weight:600">Tools & Platforms:</span> ${highlightKeyword(d.skills.tools)}</div>`;
+    if (d.skills.methods)   html += `<div><span style="font-weight:600">Methods & Techniques:</span> ${highlightKeyword(d.skills.methods)}</div>`;
+    html += `</div></div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function renderResumeText(d) {
+  let t = '';
+  t += `${d.name||''}\n${d.contact||''}\n\n`;
+  if (d.summary?.length) t += `PROFESSIONAL SUMMARY\n${d.summary.join('\n')}\n\n`;
+  if (d.education?.length) {
+    t += `EDUCATION\n`;
+    d.education.forEach(e => { t += `${e.school} — ${e.degree} (${e.dates})${e.gpa?' | GPA: '+e.gpa:''}\n${e.coursework?'Coursework: '+e.coursework+'\n':''}`; });
+    t += '\n';
+  }
+  if (d.experience?.length) {
+    t += `EXPERIENCE\n`;
+    d.experience.forEach(e => { t += `${e.company} | ${e.title} | ${e.dates}\n${(e.bullets||[]).map(b=>'• '+b).join('\n')}\n\n`; });
+  }
+  if (d.projects?.length) {
+    t += `PROJECTS\n`;
+    d.projects.forEach(p => { t += `${p.name}${p.tech?' | '+p.tech:''}\n${(p.bullets||[]).map(b=>'• '+b).join('\n')}\n\n`; });
+  }
+  if (d.skills) {
+    t += `SKILLS\n`;
+    if (d.skills.languages) t += `Languages: ${d.skills.languages}\n`;
+    if (d.skills.tools)     t += `Tools: ${d.skills.tools}\n`;
+    if (d.skills.methods)   t += `Methods: ${d.skills.methods}\n`;
+  }
+  return t;
+}
+
+function copyTailored() { copyTailoredText(); }
+function copyTailoredText() {
+  const text = window._tailorRawText || '';
+  navigator.clipboard.writeText(text).then(() => alert('Plain text copied to clipboard!'));
+}
+
+function downloadTailoredPDF() {
+  const content = el('resume-preview-render');
+  if (!content) return;
+
+  const name = (window._tailorData?.name || 'Resume').replace(/\s+/g,'_');
+  const printWin = window.open('', '_blank', 'width=800,height=1000');
+  printWin.document.write(`<!DOCTYPE html><html><head><title>${name}_Resume</title>
+    <style>
+      @page { margin: 0.6in 0.65in; size: letter; }
+      body { font-family: Georgia, serif; font-size: 11pt; color: #111; margin: 0; -webkit-print-color-adjust: exact; }
+      @media print { body { margin: 0; } }
+    </style>
+  </head><body>${content.innerHTML}</body></html>`);
+  printWin.document.close();
+  printWin.focus();
+  setTimeout(() => {
+    printWin.print();
+    printWin.close();
+  }, 400);
 }
 
 // ---- Dashboard stats ----
