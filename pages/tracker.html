@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Tracker — InternRadar</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div id="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-hex"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" fill="currentColor"/></svg></div>
+      <div><div class="logo-name">InternRadar</div><div class="logo-sub">BU Questrom · MSBA '25</div></div>
+    </div>
+    <div class="nav-section-label">Workspace</div>
+    <a href="../index.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>Dashboard</a>
+    <a href="search.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M13 13L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Job Search</a>
+    <a href="tracker.html" class="nav-item active"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="15" r="3" stroke="currentColor" stroke-width="1.4"/></svg>Application Tracker</a>
+    <a href="resume.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="4" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Resume Tailor</a>
+    <div class="nav-section-label" style="margin-top:auto">Settings</div>
+    <a href="profile.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>My Profile</a>
+    <a href="settings.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Settings</a>
+  </nav>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div>
+        <h1 class="page-title">Application Tracker</h1>
+        <p class="page-sub">Every role you've saved or applied to, with live status updates.</p>
+      </div>
+      <div class="topbar-actions">
+        <div style="display:flex;gap:6px">
+          <button class="btn-ghost" onclick="filterApps('all')" id="tab-all">All</button>
+          <button class="btn-ghost" onclick="filterApps('saved')" id="tab-saved">Saved</button>
+          <button class="btn-ghost" onclick="filterApps('applied')" id="tab-applied">Applied</button>
+          <button class="btn-ghost" onclick="filterApps('interview')" id="tab-interview">Interview</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanban summary -->
+    <div class="stats-grid" id="tracker-stats" style="margin-bottom:24px"></div>
+
+    <!-- Table -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Applications</span>
+        <span style="font-size:11px;font-family:var(--font-mono);color:var(--text3)" id="apps-count">0 entries</span>
+      </div>
+      <div id="tracker-empty" class="empty-state" style="display:none">
+        <div class="empty-icon">◎</div>
+        <div class="empty-title">No applications yet</div>
+        <div class="empty-desc">Save or apply to roles from the Job Search page to track them here.</div>
+        <button class="btn-secondary" onclick="window.location='search.html'">Go to Job Search</button>
+      </div>
+      <div id="tracker-table-wrap" style="overflow-x:auto;display:none">
+        <table class="tracker-table" id="tracker-table">
+          <thead>
+            <tr>
+              <th>Company & Role</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Saved</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tracker-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Notes modal -->
+<div class="modal-backdrop" id="notes-modal">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" onclick="el('notes-modal').classList.remove('show')">✕</button>
+    <div class="modal-title" id="notes-modal-title" style="font-size:18px">Notes</div>
+    <div style="margin-bottom:14px;margin-top:8px">
+      <div class="field-label" style="margin-bottom:6px">Status</div>
+      <select class="field-select" id="notes-status">
+        <option value="saved">Saved</option>
+        <option value="applied">Applied</option>
+        <option value="interview">Interview</option>
+        <option value="rejected">Rejected</option>
+        <option value="offer">Offer</option>
+      </select>
+    </div>
+    <div>
+      <div class="field-label" style="margin-bottom:6px">Notes</div>
+      <textarea class="field-textarea" id="notes-text" rows="5" placeholder="Add notes, contacts, follow-up dates..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="el('notes-modal').classList.remove('show')">Cancel</button>
+      <button class="btn-primary" onclick="saveNotes()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/app.js"></script>
+<script>
+let currentFilter = 'all';
+let editingJobId = null;
+
+const STATUS_LABELS = { saved:'Saved', applied:'Applied', interview:'Interview', rejected:'Rejected', offer:'Offer ✓' };
+const STATUS_CLASSES = { saved:'status-saved', applied:'status-applied', interview:'status-interview', rejected:'status-rejected', offer:'status-offer' };
+
+function initTracker() {
+  renderStats();
+  renderTable('all');
+}
+
+function renderStats() {
+  const stats = Store.getStats();
+  const items = [
+    { label:'Saved', val: stats.saved, icon:'amber' },
+    { label:'Applied', val: stats.applied, icon:'blue' },
+    { label:'Interview', val: stats.interview, icon:'purple' },
+    { label:'Offer', val: stats.offer, icon:'green' },
+  ];
+  el('tracker-stats').innerHTML = items.map(s => `
+    <div class="stat-card">
+      <div class="stat-icon ${s.icon}"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.4"/></svg></div>
+      <div class="stat-value">${s.val}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+}
+
+function filterApps(status) {
+  currentFilter = status;
+  document.querySelectorAll('[id^="tab-"]').forEach(b => b.style.fontWeight = '400');
+  if (el('tab-'+status)) el('tab-'+status).style.fontWeight = '600';
+  renderTable(status);
+}
+
+function renderTable(filter) {
+  let apps = Store.getApplications();
+  if (filter !== 'all') apps = apps.filter(a => a.status === filter);
+
+  el('apps-count').textContent = apps.length + ' entr' + (apps.length === 1 ? 'y' : 'ies');
+
+  if (!apps.length) {
+    el('tracker-empty').style.display = 'flex';
+    el('tracker-table-wrap').style.display = 'none';
+    return;
+  }
+  el('tracker-empty').style.display = 'none';
+  el('tracker-table-wrap').style.display = 'block';
+
+  el('tracker-tbody').innerHTML = apps.map(app => `
+    <tr>
+      <td>
+        <div style="font-weight:500;font-size:13px;color:var(--text)">${esc(app.title)}</div>
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--accent);margin-top:2px">${esc(app.company)}</div>
+      </td>
+      <td>${esc(app.location||'—')}</td>
+      <td><span class="status-pill ${STATUS_CLASSES[app.status]||'status-saved'}">${STATUS_LABELS[app.status]||app.status}</span></td>
+      <td style="font-size:11px;font-family:var(--font-mono)">${fmt(app.savedAt)}</td>
+      <td style="font-size:12px;color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(app.notes||'—')}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn-ghost" style="font-size:11px;padding:4px 8px" onclick="openNotes('${app.id}')">Edit</button>
+          ${app.url ? `<a class="btn-ghost" style="font-size:11px;padding:4px 8px;text-decoration:none" href="${esc(app.url)}" target="_blank">↗</a>` : ''}
+          <button class="btn-ghost" style="font-size:11px;padding:4px 8px;color:var(--red)" onclick="deleteApp('${app.id}')">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function openNotes(jobId) {
+  const app = Store.getApplications().find(a => a.id === jobId);
+  if (!app) return;
+  editingJobId = jobId;
+  el('notes-modal-title').textContent = `${app.company} — ${app.title}`;
+  el('notes-status').value = app.status;
+  el('notes-text').value = app.notes || '';
+  el('notes-modal').classList.add('show');
+}
+
+function saveNotes() {
+  if (!editingJobId) return;
+  Store.updateApplicationStatus(editingJobId, el('notes-status').value, el('notes-text').value);
+  el('notes-modal').classList.remove('show');
+  renderStats();
+  renderTable(currentFilter);
+}
+
+function deleteApp(jobId) {
+  if (!confirm('Remove this application?')) return;
+  Store.removeApplication(jobId);
+  renderStats();
+  renderTable(currentFilter);
+}
+
+initTracker();
+</script>
+</body>
+</html>
