@@ -46,7 +46,7 @@
       Settings
     </a>
   </nav>
-
+ 
   <main class="main-content">
     <div class="topbar">
       <div>
@@ -61,12 +61,12 @@
         </button>
       </div>
     </div>
-
+ 
     <div class="search-layout">
       <!-- Filter sidebar -->
       <div class="search-sidebar">
         <div class="search-sidebar-title">Search Filters</div>
-
+ 
         <div class="field-group">
           <div class="field-label">Location</div>
           <select class="field-select" id="f-location">
@@ -78,7 +78,7 @@
             <option value="Remote">Remote only</option>
           </select>
         </div>
-
+ 
         <div class="field-group">
           <div class="field-label">Industry</div>
           <select class="field-select" id="f-industry">
@@ -92,7 +92,7 @@
             <option value="Media / Advertising">Media / Advertising</option>
           </select>
         </div>
-
+ 
         <div class="field-group">
           <div class="field-label">Role Types</div>
           <div class="chip-group" id="role-chips">
@@ -106,31 +106,43 @@
             <button class="chip" data-role="marketing analytics">Marketing Analytics</button>
           </div>
         </div>
-
+ 
+        <div class="field-group" style="margin-top:8px">
+          <div class="field-label">Company Type</div>
+          <div class="chip-group" id="company-chips">
+            <button class="chip active" data-co="Big Tech">Big Tech</button>
+            <button class="chip active" data-co="Finance">Finance</button>
+            <button class="chip active" data-co="Consulting">Consulting</button>
+            <button class="chip active" data-co="Healthcare">Healthcare</button>
+            <button class="chip active" data-co="Startup">Startups</button>
+            <button class="chip active" data-co="Mid-size">Mid-size</button>
+          </div>
+        </div>
+ 
         <div class="field-group" style="margin-top:8px">
           <div class="field-label">Extra Keywords</div>
           <input type="text" class="field-input" id="f-keywords" placeholder="Python, SQL, Tableau...">
         </div>
-
+ 
         <hr class="section-divider">
-
+ 
         <div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-bottom:10px">AI LEARNING STATUS</div>
         <div id="learn-summary" style="font-size:12px;color:var(--text2)">Loading...</div>
-
+ 
         <hr class="section-divider">
         <button class="btn-secondary" style="width:100%;justify-content:center" onclick="saveFilters()">Save as defaults</button>
       </div>
-
+ 
       <!-- Results column -->
       <div>
         <div id="error-banner" class="error-banner"></div>
-
+ 
         <div id="loading-wrap" class="loading-wrap">
           <div class="spinner"></div>
           <div class="loading-msg">Finding internships with live web search...</div>
           <div class="loading-ticker" id="search-ticker"></div>
         </div>
-
+ 
         <div id="results-header" style="display:none;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
           <div style="font-size:12px;font-family:var(--font-mono);color:var(--text3)">
             Found <span id="result-count" style="color:var(--accent)">0</span> roles
@@ -138,7 +150,7 @@
           </div>
           <button class="btn-ghost" onclick="clearResults()">Clear results</button>
         </div>
-
+ 
         <div class="jobs-list" id="jobs-list">
           <div class="panel">
             <div class="empty-state">
@@ -152,7 +164,7 @@
     </div>
   </main>
 </div>
-
+ 
 <script src="../js/storage.js"></script>
 <script src="../js/app.js"></script>
 <script>
@@ -165,37 +177,40 @@ const TICKER_MSGS = [
   'Applying learned preferences...',
   'Ranking by fit score...',
 ];
-
+ 
 let searchTicker;
-
+ 
 function initSearch() {
   // Load saved prefs
   const prefs = Store.getPrefs();
   el('f-location').value = prefs.location || 'any';
   el('f-industry').value = prefs.industry || 'any';
   el('f-keywords').value = prefs.keywords || '';
-
+ 
   // Set chips
   document.querySelectorAll('.chip').forEach(c => {
     if ((prefs.roles || []).includes(c.dataset.role)) c.classList.add('active');
   });
   document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('active')));
-
   // Learning summary
   const lp = Store.getTopPreferences();
   el('learn-summary').innerHTML = lp.total === 0
     ? '<span style="color:var(--text3)">No data yet. Apply/save roles to train the AI.</span>'
     : `${lp.total} interactions recorded.<br>Top role: <span style="color:var(--accent)">${lp.roles[0]?.label || '—'}</span>`;
-
+ 
   // Load cached results
   const cached = Store.getJobs();
   if (cached.length) renderResults(cached);
 }
-
+ 
 function getSelectedRoles() {
-  return [...document.querySelectorAll('.chip.active')].map(c => c.dataset.role);
+  return [...document.querySelectorAll('#role-chips .chip.active')].map(c => c.dataset.role);
 }
-
+ 
+function getSelectedCompanyTypes() {
+  return [...document.querySelectorAll('#company-chips .chip.active')].map(c => c.dataset.co);
+}
+ 
 function saveFilters() {
   Store.setPrefs({
     roles: getSelectedRoles(),
@@ -208,35 +223,38 @@ function saveFilters() {
   btn.textContent = '✓ Saved';
   setTimeout(() => btn.textContent = 'Save as defaults', 1500);
 }
-
+ 
 async function runSearch() {
   if (!Store.getApiKey()) {
     el('error-banner').textContent = '⚠ API key missing — go to Settings to add your Anthropic API key.';
     el('error-banner').classList.add('show');
     return;
   }
-
+ 
   const roles = getSelectedRoles();
+  const companyTypes = getSelectedCompanyTypes();
   if (!roles.length) { alert('Please select at least one role type.'); return; }
-
+ 
   const location  = el('f-location').value;
   const industry  = el('f-industry').value;
   const keywords  = el('f-keywords').value.trim();
   const learnCtx  = Store.getLearningPromptContext();
   const resume    = Store.getResume();
-
+ 
   el('run-btn').disabled = true;
   el('loading-wrap').classList.add('show');
   el('error-banner').classList.remove('show');
   el('jobs-list').innerHTML = '';
   el('results-header').style.display = 'none';
-
+ 
   searchTicker = startTicker('search-ticker', TICKER_MSGS);
-
+ 
   const resumeContext = resume ? `\nStudent resume excerpt (top skills/experience):\n${resume.text.slice(0, 800)}` : '';
-
-  const prompt = `You are an expert internship job search assistant.
-
+ 
+  const today = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+ 
+  const prompt = `You are an expert internship job search assistant. Today's date is ${today}.
+ 
 STUDENT PROFILE:
 - Program: MS Business Analytics, Boston University Questrom School of Business
 - Graduation: December 2025
@@ -244,7 +262,7 @@ STUDENT PROFILE:
 - Core skills: Python, SQL, R, Tableau, Power BI, Excel, statistics, data visualization, regression, machine learning basics
 - Target: Summer 2026 internship ONLY (not full-time, not fall/spring co-op)
 ${resumeContext}
-
+ 
 SEARCH CRITERIA:
 - Role types: ${roles.join(', ')}
 - Location preference: ${location === 'any' ? 'any US location or remote' : location}
@@ -253,30 +271,45 @@ ${keywords ? `- Extra keywords: ${keywords}` : ''}
 - Summer 2026 ONLY
 - MUST be open to international students (F1/CPT/OPT)
 ${learnCtx}
-
-Search job boards right now (LinkedIn, Indeed, Handshake, Glassdoor, Wellfound, company career pages) and find 10-14 real, active Summer 2026 internship postings.
-
-Return ONLY a valid JSON array with no markdown, no preamble. Each object must have:
+ 
+SEARCH INSTRUCTIONS — follow these strictly:
+ 
+1. FRESHNESS: Search for postings from the last 7 days only. Use search queries like "site:linkedin.com/jobs" OR "site:indeed.com" with date filters. Search "Summer 2026 internship data analytics posted this week". Do NOT return any posting you cannot confirm was posted within the last 7 days. If a posting has no date visible, skip it.
+ 
+2. QUANTITY: You MUST return exactly 15 internship postings. Run multiple searches across different platforms and company types to reach 15. Do not stop at fewer.
+ 
+3. COMPANY DIVERSITY — spread results across ALL of these categories, roughly 3 per category:
+   - Big Tech (Google, Meta, Amazon, Microsoft, Apple, Netflix, Salesforce, etc.)
+   - Big Pharma / Healthcare (Johnson & Johnson, Pfizer, UnitedHealth, CVS, Merck, etc.)
+   - Finance / Banking (Goldman Sachs, JP Morgan, Citi, BlackRock, Fidelity, etc.)
+   - Consulting / Professional Services (McKinsey, Deloitte, Accenture, BCG, etc.)
+   - Startups & Mid-size companies (Series B/C startups, companies 200-2000 employees)
+   SELECTED COMPANY TYPES TO INCLUDE: ${companyTypes.join(', ') || 'all types'}
+ 
+4. SOURCES: Search across LinkedIn Jobs, Indeed, Handshake, Glassdoor, Wellfound (for startups), and direct company career pages. Use multiple searches to find recent postings.
+ 
+5. VERIFICATION: For each role, confirm it is still active and was posted recently before including it. Skip any role that looks stale, expired, or was posted more than 7 days ago.
+ 
+Return ONLY a valid JSON array — no markdown, no preamble, no explanation. 15 objects exactly. Each object:
 {
   "id": "unique short string",
   "company": "Company Name",
-  "title": "Exact job title",
+  "title": "Exact job title as listed",
   "location": "City, State or Remote",
-  "industry": "industry category",
-  "url": "direct link to posting or careers page",
-  "summary": "2-3 sentence description of the role and why it fits this student",
-  "skills": ["skill1","skill2","skill3","skill4"],
+  "industry": "Big Tech|Finance|Consulting|Healthcare|Startup|Other",
+  "url": "direct URL to the live job posting",
+  "summary": "2-3 sentences: what the role does and specifically why it fits an MSBA student with Python/SQL/Tableau skills",
+  "skills": ["skill1","skill2","skill3","skill4","skill5"],
   "match_score": "high|medium|new",
-  "posted": "e.g. Mar 2025 or Recent",
-  "deadline": "deadline date string or null",
-  "source": "LinkedIn|Indeed|Handshake|Glassdoor|Company Site",
-  "visa_friendly": true
-}
-
-Only include real, active roles. visa_friendly must be true for all results.`;
-
+  "posted": "exact date posted e.g. Mar 24 2025",
+  "deadline": "application deadline or null",
+  "source": "LinkedIn|Indeed|Handshake|Glassdoor|Wellfound|Company Site",
+  "visa_friendly": true,
+  "company_size": "Startup|Mid-size|Large|Enterprise"
+}`;
+ 
   try {
-    const text = await callClaude({ prompt, useSearch: true, maxTokens: 5000 });
+    const text = await callClaude({ prompt, useSearch: true, maxTokens: 8000 });
     const jobs = extractJSON(text);
     const tagged = jobs.map(j => ({ ...j, id: j.id || generateId() }));
     Store.setJobs(tagged);
@@ -291,23 +324,41 @@ Only include real, active roles. visa_friendly must be true for all results.`;
     clearInterval(searchTicker);
   }
 }
-
+ 
 function renderResults(jobs) {
   el('result-count').textContent = jobs.length;
   const ls = Store.getLastSearch();
   el('last-search-label').textContent = ls ? ` · ${fmt(ls)}` : '';
   el('results-header').style.display = 'flex';
+ 
+  // Freshness check — warn if any results look stale
+  const staleKeywords = ['jan 2025','feb 2025','nov 2024','dec 2024','oct 2024','2024'];
+  const staleCount = jobs.filter(j => staleKeywords.some(k => (j.posted||'').toLowerCase().includes(k))).length;
+  const freshnessWarn = el('freshness-warn') || (() => {
+    const d = document.createElement('div');
+    d.id = 'freshness-warn';
+    d.style.cssText = 'background:var(--amber-bg);border:1px solid rgba(245,200,66,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--amber);margin-bottom:12px;display:none;font-family:var(--font-mono)';
+    el('jobs-list').before(d);
+    return d;
+  })();
+  if (staleCount > 0) {
+    freshnessWarn.textContent = `⚠ ${staleCount} result${staleCount>1?'s':''} may be older postings. Verify before applying.`;
+    freshnessWarn.style.display = 'block';
+  } else {
+    freshnessWarn.style.display = 'none';
+  }
+ 
   el('jobs-list').innerHTML = jobs.length
     ? jobs.map(j => renderJobCard(j)).join('')
     : `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">No results</div><div class="empty-desc">Try broadening your filters.</div></div></div>`;
 }
-
+ 
 function clearResults() {
   Store.setJobs([]);
   el('jobs-list').innerHTML = `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">Results cleared</div><div class="empty-desc">Run a new search to find fresh roles.</div></div></div>`;
   el('results-header').style.display = 'none';
 }
-
+ 
 initSearch();
 </script>
 </body>
