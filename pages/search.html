@@ -6,362 +6,668 @@
 <title>Job Search — InternRadar</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/app.css">
+<style>
+.link-card{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--text);transition:border-color .13s,background .13s;margin-bottom:8px}
+.link-card:hover{border-color:var(--border3);background:var(--surface3)}
+.link-card-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.link-card-title{font-size:13px;font-weight:500}
+.link-card-sub{font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-top:2px}
+.link-card-badge{margin-left:auto;font-size:10px;font-family:var(--font-mono);padding:2px 7px;border-radius:10px;background:var(--green-bg);color:var(--green);border:1px solid rgba(111,207,151,.2);white-space:nowrap;flex-shrink:0}
+.mode-tab{padding:7px 16px;background:transparent;border:1px solid var(--border2);border-radius:var(--radius);font-family:var(--font-body);font-size:13px;color:var(--text2);cursor:pointer;transition:all .12s}
+.mode-tab.active{background:var(--accent-bg);border-color:rgba(232,213,163,.25);color:var(--accent)}
+.qual-warn{background:var(--red-bg);border:1px solid rgba(244,124,124,.2);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--red);margin-top:8px;font-family:var(--font-mono);display:none}
+</style>
 </head>
 <body>
 <div id="app">
   <nav class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-hex">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" fill="currentColor"/></svg>
-      </div>
-      <div>
-        <div class="logo-name">InternRadar</div>
-        <div class="logo-sub">BU Questrom · MSBA '25</div>
-      </div>
+      <div class="logo-hex"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" fill="currentColor"/></svg></div>
+      <div><div class="logo-name">InternRadar</div><div class="logo-sub">BU Questrom · MSBA '25</div></div>
     </div>
     <div class="nav-section-label">Workspace</div>
-    <a href="../index.html" class="nav-item">
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
-      Dashboard
-    </a>
-    <a href="search.html" class="nav-item active">
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M13 13L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Job Search
-    </a>
-    <a href="tracker.html" class="nav-item">
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="15" r="3" stroke="currentColor" stroke-width="1.4"/></svg>
-      Application Tracker
-    </a>
-    <a href="resume.html" class="nav-item">
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="4" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Resume Tailor
-    </a>
+    <a href="../index.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>Dashboard</a>
+    <a href="search.html" class="nav-item active"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M13 13L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Job Search</a>
+    <a href="tracker.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="15" r="3" stroke="currentColor" stroke-width="1.4"/></svg>Application Tracker</a>
+    <a href="resume.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><rect x="4" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Resume Tailor</a>
     <div class="nav-section-label" style="margin-top:auto">Settings</div>
-    <a href="profile.html" class="nav-item">
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      My Profile
-    </a>
-    <a href="settings.html" class="nav-item">
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Settings
-    </a>
+    <a href="profile.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>My Profile</a>
+    <a href="settings.html" class="nav-item"><svg viewBox="0 0 20 20" width="16" height="16" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Settings</a>
   </nav>
 
   <main class="main-content">
     <div class="topbar">
       <div>
         <h1 class="page-title">Job Search</h1>
-        <p class="page-sub">AI-powered daily search tailored to your MSBA profile.</p>
+        <p class="page-sub" id="search-date-label">Loading...</p>
       </div>
       <div class="topbar-actions">
         <div class="visa-badge">✓ F1/CPT/OPT filter ON</div>
-        <button class="btn-primary" id="run-btn" onclick="runSearch()">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10L14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          Search Now
-        </button>
       </div>
     </div>
 
-    <div class="search-layout">
-      <!-- Filter sidebar -->
-      <div class="search-sidebar">
-        <div class="search-sidebar-title">Search Filters</div>
+    <!-- Mode tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap">
+      <button class="mode-tab active" id="tab-browse" onclick="switchMode('browse')">
+        🔗 Browse Job Boards
+      </button>
+      <button class="mode-tab" id="tab-paste" onclick="switchMode('paste')">
+        📋 Paste & Analyze a Job
+      </button>
+      <button class="mode-tab" id="tab-ai" onclick="switchMode('ai')">
+        ✦ AI Discovery
+      </button>
+    </div>
 
-        <div class="field-group">
-          <div class="field-label">Location</div>
-          <select class="field-select" id="f-location">
-            <option value="any">Any / Remote OK</option>
-            <option value="Boston MA">Boston, MA</option>
-            <option value="New York NY">New York, NY</option>
-            <option value="San Francisco CA">San Francisco, CA</option>
-            <option value="Chicago IL">Chicago, IL</option>
-            <option value="Remote">Remote only</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <div class="field-label">Industry</div>
-          <select class="field-select" id="f-industry">
-            <option value="any">All Industries</option>
-            <option value="Tech / Software">Tech / Software</option>
-            <option value="Finance / Banking">Finance / Banking</option>
-            <option value="Consulting">Consulting</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Retail / E-commerce">Retail / E-commerce</option>
-            <option value="Manufacturing">Manufacturing / Supply Chain</option>
-            <option value="Media / Advertising">Media / Advertising</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <div class="field-label">Role Types</div>
-          <div class="chip-group" id="role-chips">
-            <button class="chip" data-role="data analyst">Data Analyst</button>
-            <button class="chip" data-role="business analyst">Business Analyst</button>
-            <button class="chip" data-role="data science">Data Science</button>
-            <button class="chip" data-role="product analytics">Product Analytics</button>
-            <button class="chip" data-role="strategy analytics">Strategy & Analytics</button>
-            <button class="chip" data-role="operations analytics">Operations Analytics</button>
-            <button class="chip" data-role="finance analytics">Finance Analytics</button>
-            <button class="chip" data-role="marketing analytics">Marketing Analytics</button>
-          </div>
-        </div>
-
-        <div class="field-group" style="margin-top:8px">
-          <div class="field-label">Company Type</div>
-          <div class="chip-group" id="company-chips">
-            <button class="chip active" data-co="Big Tech">Big Tech</button>
-            <button class="chip active" data-co="Finance">Finance</button>
-            <button class="chip active" data-co="Consulting">Consulting</button>
-            <button class="chip active" data-co="Healthcare">Healthcare</button>
-            <button class="chip active" data-co="Startup">Startups</button>
-            <button class="chip active" data-co="Mid-size">Mid-size</button>
-          </div>
-        </div>
-
-        <div class="field-group" style="margin-top:8px">
-          <div class="field-label">Extra Keywords</div>
-          <input type="text" class="field-input" id="f-keywords" placeholder="Python, SQL, Tableau...">
-        </div>
-
-        <hr class="section-divider">
-
-        <div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-bottom:10px">AI LEARNING STATUS</div>
-        <div id="learn-summary" style="font-size:12px;color:var(--text2)">Loading...</div>
-
-        <hr class="section-divider">
-        <button class="btn-secondary" style="width:100%;justify-content:center" onclick="saveFilters()">Save as defaults</button>
+    <!-- ═══ MODE 1: Browse Job Boards ═══ -->
+    <div id="mode-browse">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:20px">
+        <div style="font-size:12px;font-family:var(--font-mono);color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px">Today's Search Links — All pre-filtered for 24h, internship, Summer 2026</div>
+        <div id="browse-links"></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:10px;font-family:var(--font-mono)">↑ These open the real job boards with date filters applied. After finding a role, paste it in the "Paste & Analyze" tab.</div>
       </div>
 
-      <!-- Results column -->
-      <div>
-        <div id="error-banner" class="error-banner"></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px">
+        <div style="font-size:12px;font-family:var(--font-mono);color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px">Company Career Pages — Check these daily for direct applications</div>
+        <div id="career-links"></div>
+      </div>
+    </div>
 
-        <div id="loading-wrap" class="loading-wrap">
-          <div class="spinner"></div>
-          <div class="loading-msg">Finding internships with live web search...</div>
-          <div class="loading-ticker" id="search-ticker"></div>
-        </div>
-
-        <div id="results-header" style="display:none;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:12px;font-family:var(--font-mono);color:var(--text3)">
-            Found <span id="result-count" style="color:var(--accent)">0</span> roles
-            <span id="last-search-label"></span>
+    <!-- ═══ MODE 2: Paste & Analyze ═══ -->
+    <div id="mode-paste" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="section-card">
+          <div class="section-card-title">Paste a job description or URL</div>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7">Found a role on Indeed, LinkedIn, or a company site? Paste the job description here. The AI will score your match, check qualifications, and let you tailor your resume in one click.</p>
+          <div class="field-group">
+            <div class="field-label">Company</div>
+            <input type="text" class="field-input" id="paste-company" placeholder="e.g. Amazon">
           </div>
-          <button class="btn-ghost" onclick="clearResults()">Clear results</button>
+          <div class="field-group">
+            <div class="field-label">Job Title</div>
+            <input type="text" class="field-input" id="paste-title" placeholder="e.g. Business Analyst Intern">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Direct URL to posting</div>
+            <input type="url" class="field-input" id="paste-url" placeholder="https://...">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Job Description (paste full text)</div>
+            <textarea class="field-textarea" id="paste-jd" rows="12" placeholder="Paste the complete job description here..."></textarea>
+          </div>
+          <button class="btn-primary" style="width:100%;justify-content:center" id="analyze-btn" onclick="analyzeJob()">
+            ✦ Analyze Match &amp; Score
+          </button>
         </div>
 
-        <div class="jobs-list" id="jobs-list">
-          <div class="panel">
-            <div class="empty-state">
-              <div class="empty-icon">◈</div>
-              <div class="empty-title">Configure filters and run a search</div>
-              <div class="empty-desc">The AI will scan LinkedIn, Indeed, Handshake, and company career pages for Summer 2026 internships open to international students.</div>
+        <div>
+          <div id="analyze-empty" class="section-card" style="text-align:center;padding:40px 20px">
+            <div style="font-size:24px;color:var(--text3);margin-bottom:10px">◈</div>
+            <div style="font-size:14px;color:var(--text2);margin-bottom:6px">Paste a job description to analyze</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.7">The AI will check your match score, flag qualification issues (wrong degree, no visa sponsorship, etc.), identify your strongest selling points, and let you tailor your resume for that specific role.</div>
+          </div>
+          <div id="analyze-loading" class="loading-wrap" style="display:none;padding:40px">
+            <div class="spinner"></div>
+            <div class="loading-msg">Analyzing job against your profile...</div>
+            <div class="loading-ticker" id="analyze-ticker"></div>
+          </div>
+          <div id="analyze-result" class="section-card" style="display:none">
+            <div id="analyze-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analyzed jobs list -->
+      <div id="paste-saved-section" style="margin-top:20px;display:none">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Analyzed Roles</span><button class="btn-ghost" onclick="clearPastedJobs()">Clear</button></div>
+          <div class="jobs-list" style="padding:14px;gap:12px;display:flex;flex-direction:column" id="paste-jobs-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MODE 3: AI Discovery ═══ -->
+    <div id="mode-ai" style="display:none">
+      <div class="search-layout">
+        <!-- Filter sidebar -->
+        <div class="search-sidebar">
+          <div class="search-sidebar-title">Search Filters</div>
+          <div style="background:var(--amber-bg);border:1px solid rgba(245,200,66,.2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--amber);font-family:var(--font-mono);margin-bottom:14px;line-height:1.6">
+            ⚠ AI Discovery uses web search to find roles. Results may not always be 24h fresh — use "Browse Job Boards" for guaranteed fresh results. Duplicates from previous searches are auto-hidden.
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">Location</div>
+            <select class="field-select" id="f-location">
+              <option value="any">Any / Remote OK</option>
+              <option value="Boston MA">Boston, MA</option>
+              <option value="New York NY">New York, NY</option>
+              <option value="San Francisco CA">San Francisco, CA</option>
+              <option value="Chicago IL">Chicago, IL</option>
+              <option value="Remote">Remote only</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Industry</div>
+            <select class="field-select" id="f-industry">
+              <option value="any">All Industries</option>
+              <option value="Tech / Software">Tech / Software</option>
+              <option value="Finance / Banking">Finance / Banking</option>
+              <option value="Consulting">Consulting</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Retail / E-commerce">Retail / E-commerce</option>
+              <option value="Manufacturing">Manufacturing / Supply Chain</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Role Types</div>
+            <div class="chip-group" id="role-chips">
+              <button class="chip" data-role="data analyst">Data Analyst</button>
+              <button class="chip" data-role="business analyst">Business Analyst</button>
+              <button class="chip" data-role="data science">Data Science</button>
+              <button class="chip" data-role="product analytics">Product Analytics</button>
+              <button class="chip" data-role="strategy analytics">Strategy & Analytics</button>
+              <button class="chip" data-role="operations analytics">Ops Analytics</button>
+              <button class="chip" data-role="finance analytics">Finance Analytics</button>
+              <button class="chip" data-role="marketing analytics">Marketing Analytics</button>
             </div>
           </div>
+          <div class="field-group">
+            <div class="field-label">Company Types</div>
+            <div class="chip-group" id="company-chips">
+              <button class="chip active" data-co="Big Tech">Big Tech</button>
+              <button class="chip active" data-co="Finance">Finance</button>
+              <button class="chip active" data-co="Consulting">Consulting</button>
+              <button class="chip active" data-co="Healthcare">Healthcare</button>
+              <button class="chip active" data-co="Startup">Startup</button>
+              <button class="chip active" data-co="Mid-size">Mid-size</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Keywords</div>
+            <input type="text" class="field-input" id="f-keywords" placeholder="Python, SQL, Tableau...">
+          </div>
+          <hr class="section-divider">
+          <div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-bottom:6px">SEEN JOBS</div>
+          <div id="seen-count" style="font-size:12px;color:var(--text2)"></div>
+          <button class="btn-ghost" style="font-size:11px;margin-top:6px" onclick="resetSeen()">Reset "seen" history</button>
+          <hr class="section-divider">
+          <button class="btn-primary" style="width:100%;justify-content:center" id="run-btn" onclick="runAISearch()">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10L14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Run AI Search
+          </button>
+          <button class="btn-secondary" style="width:100%;justify-content:center;margin-top:8px" onclick="saveFilters()">Save as defaults</button>
+        </div>
+
+        <!-- Results -->
+        <div>
+          <div id="error-banner" class="error-banner"></div>
+          <div id="loading-wrap" class="loading-wrap">
+            <div class="spinner"></div>
+            <div class="loading-msg">Searching for fresh internships...</div>
+            <div class="loading-ticker" id="search-ticker"></div>
+          </div>
+          <div id="results-header" style="display:none;margin-bottom:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:12px;font-family:var(--font-mono);color:var(--text3)">
+                Showing <span id="result-count" style="color:var(--accent)">0</span> roles
+                <span id="last-search-label"></span>
+              </div>
+              <button class="btn-ghost" onclick="clearResults()">Clear</button>
+            </div>
+            <div id="freshness-warn" style="display:none;margin-top:8px;background:var(--amber-bg);border:1px solid rgba(245,200,66,.2);border-radius:var(--radius);padding:8px 12px;font-size:11px;color:var(--amber);font-family:var(--font-mono)"></div>
+          </div>
+          <div class="jobs-list" id="jobs-list">
+            <div class="panel"><div class="empty-state">
+              <div class="empty-icon">◈</div>
+              <div class="empty-title">Configure and run a search</div>
+              <div class="empty-desc">The AI will search for Summer 2026 internships, filter out roles you don't qualify for, and hide jobs you've already seen.</div>
+            </div></div>
+          </div>
         </div>
       </div>
     </div>
+
   </main>
 </div>
 
 <script src="../js/storage.js"></script>
 <script src="../js/app.js"></script>
 <script>
-const TICKER_MSGS = [
-  'Querying LinkedIn & Handshake...',
-  'Scanning Indeed & Glassdoor...',
-  'Checking company career pages...',
-  'Filtering for F1/CPT/OPT eligibility...',
-  'Scoring matches against your profile...',
-  'Applying learned preferences...',
-  'Ranking by fit score...',
+// ── BROWSE LINKS ─────────────────────────────────────────────────────────────
+const BROWSE_LINKS = [
+  {
+    icon:'🔵', label:'LinkedIn Jobs', sub:'Past 24 hours · Internship · United States',
+    badge:'24h filter',
+    url:'https://www.linkedin.com/jobs/search/?keywords=data+analytics+intern+summer+2026&f_TPR=r86400&f_JT=I&location=United+States',
+  },
+  {
+    icon:'🔵', label:'LinkedIn — Business Analyst Intern', sub:'Past 24 hours · Internship',
+    badge:'24h filter',
+    url:'https://www.linkedin.com/jobs/search/?keywords=business+analyst+intern+2026&f_TPR=r86400&f_JT=I&location=United+States',
+  },
+  {
+    icon:'🟡', label:'Indeed — Data Analytics Intern 2026', sub:'Past 24 hours · Entry level',
+    badge:'24h filter',
+    url:'https://www.indeed.com/jobs?q=data+analytics+intern+summer+2026&fromage=1&explvl=entry_level&jt=internship',
+  },
+  {
+    icon:'🟡', label:'Indeed — Business Analyst Intern 2026', sub:'Past 24 hours',
+    badge:'24h filter',
+    url:'https://www.indeed.com/jobs?q=business+analyst+intern+2026&fromage=1&jt=internship',
+  },
+  {
+    icon:'🟣', label:'Handshake — Analytics Internships', sub:'Summer 2026 · F1 friendly',
+    badge:'Handshake',
+    url:'https://joinhandshake.com/jobs/?job_type_names[]=Internship&job_type_names[]=Internship+(cooperative+education)&work_study_approved=false&major_names[]=Business+Analytics',
+  },
+  {
+    icon:'🟢', label:'Wellfound — Startup Analytics Roles', sub:'Internships · United States',
+    badge:'Startups',
+    url:'https://wellfound.com/jobs?role=business-analyst&jobType=Internship&remote=false',
+  },
+  {
+    icon:'⚫', label:'Glassdoor — Data Analyst Intern', sub:'Posted last 24 hours',
+    badge:'24h filter',
+    url:'https://www.glassdoor.com/Job/united-states-data-analyst-intern-jobs-SRCH_IL.0,13_IN1_KO14,33.htm?fromAge=1&jobType=internship',
+  },
 ];
 
-let searchTicker;
+const CAREER_LINKS = [
+  { icon:'🔷', label:'Amazon Student Programs', sub:'Internship & co-op opportunities', url:'https://www.amazon.jobs/en/business_categories/student-programs' },
+  { icon:'🔷', label:'Google Internships', sub:'STEP & SWE internships + analytics', url:'https://careers.google.com/students/' },
+  { icon:'🔶', label:'Microsoft University Recruiting', sub:'Intern roles across all teams', url:'https://careers.microsoft.com/students/us/en' },
+  { icon:'⬛', label:'Goldman Sachs Campus Recruiting', sub:'Finance & data analytics internships', url:'https://www.goldmansachs.com/careers/students/' },
+  { icon:'🔵', label:'JPMorgan Chase Campus', sub:'Business & data analyst internships', url:'https://careers.jpmorgan.com/us/en/students' },
+  { icon:'🟦', label:'McKinsey Internships', sub:'Business analytics & consulting roles', url:'https://www.mckinsey.com/careers/students' },
+  { icon:'🟩', label:'Deloitte University Recruiting', sub:'Analytics, consulting, data roles', url:'https://www2.deloitte.com/us/en/pages/careers/articles/join-deloitte-internship.html' },
+  { icon:'🟥', label:'Johnson & Johnson Students', sub:'Healthcare data & analytics internships', url:'https://jobs.jnj.com/internships-and-new-graduates' },
+];
 
-function initSearch() {
-  // Load saved prefs
-  const prefs = Store.getPrefs();
-  el('f-location').value = prefs.location || 'any';
-  el('f-industry').value = prefs.industry || 'any';
-  el('f-keywords').value = prefs.keywords || '';
+function buildBrowseLinks() {
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  el('search-date-label').textContent = `${today} — Click a link below to browse today's fresh postings.`;
 
-  // Set chips
-  document.querySelectorAll('.chip').forEach(c => {
-    if ((prefs.roles || []).includes(c.dataset.role)) c.classList.add('active');
+  el('browse-links').innerHTML = BROWSE_LINKS.map(l => `
+    <a href="${l.url}" target="_blank" rel="noopener" class="link-card">
+      <div class="link-card-icon" style="background:var(--surface3)">${l.icon}</div>
+      <div style="min-width:0">
+        <div class="link-card-title">${esc(l.label)}</div>
+        <div class="link-card-sub">${esc(l.sub)}</div>
+      </div>
+      <span class="link-card-badge">${esc(l.badge)}</span>
+    </a>`).join('');
+
+  el('career-links').innerHTML = CAREER_LINKS.map(l => `
+    <a href="${l.url}" target="_blank" rel="noopener" class="link-card">
+      <div class="link-card-icon" style="background:var(--surface3)">${l.icon}</div>
+      <div style="min-width:0">
+        <div class="link-card-title">${esc(l.label)}</div>
+        <div class="link-card-sub">${esc(l.sub)}</div>
+      </div>
+      <span style="margin-left:auto;font-size:10px;font-family:var(--font-mono);color:var(--text3)">↗</span>
+    </a>`).join('');
+}
+
+// ── MODE SWITCHING ────────────────────────────────────────────────────────────
+function switchMode(mode) {
+  ['browse','paste','ai'].forEach(m => {
+    el('mode-'+m).style.display = m===mode ? 'block' : 'none';
+    el('tab-'+m).classList.toggle('active', m===mode);
   });
-  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('active')));
-  // Learning summary
-  const lp = Store.getTopPreferences();
-  el('learn-summary').innerHTML = lp.total === 0
-    ? '<span style="color:var(--text3)">No data yet. Apply/save roles to train the AI.</span>'
-    : `${lp.total} interactions recorded.<br>Top role: <span style="color:var(--accent)">${lp.roles[0]?.label || '—'}</span>`;
-
-  // Load cached results
-  const cached = Store.getJobs();
-  if (cached.length) renderResults(cached);
 }
 
-function getSelectedRoles() {
-  return [...document.querySelectorAll('#role-chips .chip.active')].map(c => c.dataset.role);
-}
+// ── PASTE & ANALYZE ───────────────────────────────────────────────────────────
+let pastedJobs = [];
 
-function getSelectedCompanyTypes() {
-  return [...document.querySelectorAll('#company-chips .chip.active')].map(c => c.dataset.co);
-}
+async function analyzeJob() {
+  const resume = Store.getResume();
+  if (!Store.getApiKey()) { alert('Add your API key in Settings first.'); return; }
 
-function saveFilters() {
-  Store.setPrefs({
-    roles: getSelectedRoles(),
-    location: el('f-location').value,
-    industry: el('f-industry').value,
-    keywords: el('f-keywords').value.trim(),
-    visaFilter: true,
-  });
-  const btn = event.target;
-  btn.textContent = '✓ Saved';
-  setTimeout(() => btn.textContent = 'Save as defaults', 1500);
-}
+  const company = el('paste-company').value.trim();
+  const title   = el('paste-title').value.trim();
+  const url     = el('paste-url').value.trim();
+  const jd      = el('paste-jd').value.trim();
 
-async function runSearch() {
-  if (!Store.getApiKey()) {
-    el('error-banner').textContent = '⚠ API key missing — go to Settings to add your Anthropic API key.';
-    el('error-banner').classList.add('show');
-    return;
-  }
+  if (!jd || jd.length < 80) { alert('Please paste the full job description (at least a few sentences).'); return; }
 
-  const roles = getSelectedRoles();
-  const companyTypes = getSelectedCompanyTypes();
-  if (!roles.length) { alert('Please select at least one role type.'); return; }
+  el('analyze-empty').style.display='none';
+  el('analyze-result').style.display='none';
+  el('analyze-loading').style.display='block';
+  el('analyze-btn').disabled=true;
 
-  const location  = el('f-location').value;
-  const industry  = el('f-industry').value;
-  const keywords  = el('f-keywords').value.trim();
-  const learnCtx  = Store.getLearningPromptContext();
-  const resume    = Store.getResume();
+  const ticker = startTicker('analyze-ticker',[
+    'Checking qualification requirements...',
+    'Scoring skill match...',
+    'Checking visa sponsorship language...',
+    'Identifying your strongest selling points...',
+    'Assessing competition level...',
+  ]);
 
-  el('run-btn').disabled = true;
-  el('loading-wrap').classList.add('show');
-  el('error-banner').classList.remove('show');
-  el('jobs-list').innerHTML = '';
-  el('results-header').style.display = 'none';
+  const resumeSnippet = resume ? resume.text.slice(0,1200) : 'No resume uploaded.';
 
-  searchTicker = startTicker('search-ticker', TICKER_MSGS);
-
-  const resumeContext = resume ? `\nStudent resume excerpt (top skills/experience):\n${resume.text.slice(0, 800)}` : '';
-
-  const today = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-
-  const prompt = `You are an expert internship job search assistant. Today's date is ${today}.
+  const prompt = `Analyze whether this internship role is a good fit for this student. Be direct and honest.
 
 STUDENT PROFILE:
-- Program: MS Business Analytics, Boston University Questrom School of Business
+- Degree: MS Business Analytics, Boston University Questrom
 - Graduation: December 2025
-- Visa: F1 student — MUST work only at companies that sponsor CPT, OPT, or H1-B. This is a hard filter.
-- Core skills: Python, SQL, R, Tableau, Power BI, Excel, statistics, data visualization, regression, machine learning basics
-- Target: Summer 2026 internship ONLY (not full-time, not fall/spring co-op)
-${resumeContext}
+- Visa: F1 student (needs CPT, OPT, or H1-B sponsorship)
+- Skills: Python, SQL, R, Tableau, Power BI, Excel, statistics, data visualization, regression, ML basics
+- Resume excerpt: ${resumeSnippet}
 
-SEARCH CRITERIA:
-- Role types: ${roles.join(', ')}
-- Location preference: ${location === 'any' ? 'any US location or remote' : location}
-- Industry: ${industry === 'any' ? 'any industry' : industry}
-${keywords ? `- Extra keywords: ${keywords}` : ''}
-- Summer 2026 ONLY
-- MUST be open to international students (F1/CPT/OPT)
-${learnCtx}
+JOB TO ANALYZE:
+Company: ${company||'Unknown'}
+Title: ${title||'Unknown'}
+Description:
+${jd}
 
-SEARCH INSTRUCTIONS — follow ALL of these strictly:
-
-1. FRESHNESS — 24 HOURS ONLY: Today is ${today}. You MUST only return postings confirmed posted within the last 24 hours. Use date-filtered searches: append "past 24 hours" or "past day" or "date:today" to your queries on LinkedIn/Indeed/Handshake. If you cannot confirm a posting's date is within the past 24 hours, DO NOT include it. Stale results (even 2-3 days old) are useless to this user. Run fresh searches now — do not rely on cached or remembered results.
-
-2. DIRECT APPLICATION URLS: The url field MUST be the direct link to that specific job posting page — not a company's general careers homepage. For LinkedIn, it should look like linkedin.com/jobs/view/JOBID. For Indeed: indeed.com/viewjob?jk=JOBID. For company sites: the specific /jobs/ or /careers/ page for that exact role. If you only have a general careers page URL, keep searching until you find the specific posting URL. A generic careers homepage URL is not acceptable.
-
-3. STRONG MATCH ONLY: Only include roles where there is a genuine, strong skill match with the student's profile. The student has: Python, SQL, R, Tableau, Power BI, Excel, statistics, data visualization, regression, machine learning basics. Every returned role must require at least 3 of these skills. Do NOT include roles that are primarily software engineering, IT support, or unrelated to business/data analytics. Only return roles you would rate 7/10 or higher for fit.
-
-4. QUANTITY: Return exactly 15 postings. Run multiple searches to reach 15 fresh results. Do not stop at fewer.
-
-5. COMPANY DIVERSITY — spread across these types:
-   - Big Tech (Google, Meta, Amazon, Microsoft, Apple, Netflix, Salesforce, etc.)
-   - Big Pharma / Healthcare (J&J, Pfizer, UnitedHealth, CVS, Merck, etc.)
-   - Finance / Banking (Goldman, JPMorgan, Citi, BlackRock, Fidelity, etc.)
-   - Consulting (McKinsey, Deloitte, Accenture, BCG, etc.)
-   - Startups & Mid-size (Series B/C startups, 200-2000 employee companies)
-   SELECTED TYPES: ${companyTypes.join(', ') || 'all types'}
-
-6. SOURCES: LinkedIn Jobs (with "Past 24 hours" filter), Indeed (date:1), Handshake, Glassdoor, Wellfound, company career pages.
-
-Return ONLY a valid JSON array — no markdown, no preamble. 15 objects. Each object:
+Analyze and return ONLY this JSON (no markdown):
 {
-  "id": "unique short string",
-  "company": "Company Name",
-  "title": "Exact job title as listed on the posting",
-  "location": "City, State or Remote",
-  "industry": "Big Tech|Finance|Consulting|Healthcare|Startup|Other",
-  "url": "DIRECT link to THIS specific job posting page — not the company homepage",
-  "summary": "2-3 sentences: what the role does and specifically which of the student's skills (Python/SQL/Tableau/etc) it requires",
-  "skills": ["skill1","skill2","skill3","skill4","skill5"],
-  "match_score": "high",
-  "posted": "exact date posted e.g. Mar 25 2026",
-  "deadline": "application deadline or null",
-  "source": "LinkedIn|Indeed|Handshake|Glassdoor|Wellfound|Company Site",
-  "visa_friendly": true,
-  "company_size": "Startup|Mid-size|Large|Enterprise"
+  "qualifies": true or false,
+  "disqualifiers": ["list any hard blockers — e.g. PhD required, specific degree not matching, no visa sponsorship mentioned"],
+  "match_score": 0-100,
+  "match_label": "Strong match|Good match|Weak match|Not qualified",
+  "visa_mention": "Confirmed F1/CPT/OPT|Confirmed H1-B|No mention — verify|Explicitly excluded",
+  "your_strengths": ["top 3 specific skills/experiences from this student's profile that align with THIS job"],
+  "gaps": ["top 2-3 genuine gaps — skills listed in JD the student doesn't have"],
+  "competition_level": "Low|Medium|High|Very High",
+  "apply_recommendation": "Apply now|Apply with tailored resume|Consider|Skip",
+  "apply_reason": "one sentence explanation of your recommendation",
+  "skills_matched": ["skills from JD that match student's profile"],
+  "skills_missing": ["important skills in JD not in student profile"]
 }`;
 
   try {
-    const text = await callClaude({ prompt, useSearch: true, maxTokens: 8000 });
-    const jobs = extractJSON(text);
-    const tagged = jobs.map(j => ({ ...j, id: j.id || generateId() }));
-    Store.setJobs(tagged);
-    renderResults(tagged);
+    const raw = await callClaude({ prompt, useSearch: false, maxTokens: 1200 });
+    clearInterval(ticker);
+    let data;
+    try { data = JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||'{}'); }
+    catch { throw new Error('Could not parse analysis'); }
+
+    el('analyze-loading').style.display='none';
+    el('analyze-result').style.display='block';
+    renderAnalysis(data, { company, title, url, jd, id: generateId() });
+
   } catch(err) {
-    el('error-banner').textContent = '⚠ ' + err.message;
-    el('error-banner').classList.add('show');
-    el('jobs-list').innerHTML = `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">Search failed</div><div class="empty-desc">Check your API key in Settings and try again.</div></div></div>`;
+    clearInterval(ticker);
+    el('analyze-loading').style.display='none';
+    el('analyze-empty').style.display='block';
+    alert('Analysis failed: ' + err.message);
   } finally {
-    el('run-btn').disabled = false;
-    el('loading-wrap').classList.remove('show');
-    clearInterval(searchTicker);
+    el('analyze-btn').disabled=false;
   }
 }
 
-function renderResults(jobs) {
-  el('result-count').textContent = jobs.length;
-  const ls = Store.getLastSearch();
-  el('last-search-label').textContent = ls ? ` · ${fmt(ls)}` : '';
-  el('results-header').style.display = 'flex';
+function renderAnalysis(data, job) {
+  const scoreColor = data.match_score>=70?'var(--green)':data.match_score>=45?'var(--amber)':'var(--red)';
+  const recColor = data.apply_recommendation==='Apply now'||data.apply_recommendation==='Apply with tailored resume'?'var(--green-bg)':data.apply_recommendation==='Skip'?'var(--red-bg)':'var(--amber-bg)';
+  const recTextColor = data.apply_recommendation==='Apply now'||data.apply_recommendation==='Apply with tailored resume'?'var(--green)':data.apply_recommendation==='Skip'?'var(--red)':'var(--amber)';
+  const hasResume = !!Store.getResume();
 
-  // Freshness check — warn if any results look stale
-  const staleKeywords = ['jan 2025','feb 2025','nov 2024','dec 2024','oct 2024','2024'];
-  const staleCount = jobs.filter(j => staleKeywords.some(k => (j.posted||'').toLowerCase().includes(k))).length;
-  const freshnessWarn = el('freshness-warn') || (() => {
-    const d = document.createElement('div');
-    d.id = 'freshness-warn';
-    d.style.cssText = 'background:var(--amber-bg);border:1px solid rgba(245,200,66,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--amber);margin-bottom:12px;display:none;font-family:var(--font-mono)';
-    el('jobs-list').before(d);
-    return d;
-  })();
-  if (staleCount > 0) {
-    freshnessWarn.textContent = `⚠ ${staleCount} result${staleCount>1?'s':''} may be older postings. Verify before applying.`;
-    freshnessWarn.style.display = 'block';
+  el('analyze-content').innerHTML = `
+    <div style="padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div><div style="font-size:15px;font-weight:500">${esc(job.title||'Role')}</div><div style="font-size:11px;font-family:var(--font-mono);color:var(--accent)">${esc(job.company||'')}</div></div>
+        <div style="text-align:right"><div style="font-size:26px;font-weight:600;color:${scoreColor}">${data.match_score}<span style="font-size:14px">/100</span></div><div style="font-size:10px;font-family:var(--font-mono);color:var(--text3)">${esc(data.match_label||'')}</div></div>
+      </div>
+    </div>
+
+    ${(data.disqualifiers||[]).length ? `
+    <div style="background:var(--red-bg);border:1px solid rgba(244,124,124,.2);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px">
+      <div style="font-size:11px;font-family:var(--font-mono);color:var(--red);margin-bottom:5px">⚠ DISQUALIFIERS</div>
+      ${data.disqualifiers.map(d=>`<div style="font-size:12px;color:var(--red)">• ${esc(d)}</div>`).join('')}
+    </div>` : ''}
+
+    <div style="background:${recColor};border-radius:var(--radius);padding:10px 12px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:500;color:${recTextColor}">${esc(data.apply_recommendation||'')}</div>
+      <div style="font-size:11px;color:${recTextColor};opacity:.85;margin-top:3px">${esc(data.apply_reason||'')}</div>
+    </div>
+
+    <div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-bottom:4px">VISA</div>
+    <div style="font-size:12px;color:${data.visa_mention?.includes('Confirmed')?'var(--green)':'var(--amber)'};margin-bottom:12px;font-family:var(--font-mono)">${esc(data.visa_mention||'Unknown')}</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px">
+        <div style="font-size:10px;font-family:var(--font-mono);color:var(--green);margin-bottom:5px">YOUR STRENGTHS</div>
+        ${(data.your_strengths||[]).map(s=>`<div style="font-size:11px;color:var(--text2);margin-bottom:3px">✓ ${esc(s)}</div>`).join('')}
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px">
+        <div style="font-size:10px;font-family:var(--font-mono);color:var(--amber);margin-bottom:5px">GAPS TO ADDRESS</div>
+        ${(data.gaps||[]).map(g=>`<div style="font-size:11px;color:var(--text2);margin-bottom:3px">△ ${esc(g)}</div>`).join('')}
+      </div>
+    </div>
+
+    <div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-bottom:4px">COMPETITION: <span style="color:var(--text2)">${esc(data.competition_level||'Unknown')}</span></div>
+
+    ${!data.qualifies ? '<div style="font-size:12px;color:var(--red);margin-top:10px;padding:8px;background:var(--red-bg);border-radius:var(--radius)">⚠ This role has hard disqualifiers. Review before applying.</div>' : ''}
+
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      ${hasResume&&data.qualifies!==false ? `<button class="btn-tailor" onclick="tailorFromAnalysis(${esc(JSON.stringify(job))}, ${esc(JSON.stringify(data))})">✦ Tailor Resume</button>` : ''}
+      ${job.url ? `<a class="btn-apply" href="${esc(job.url)}" target="_blank">Open Job →</a>` : ''}
+      <button class="btn-secondary" style="font-size:12px" onclick="saveAnalyzedJob(${esc(JSON.stringify({...job,...data}))})">☆ Save</button>
+    </div>`;
+
+  // Save to analyzed jobs list
+  saveAnalyzedJob({...job, ...data}, false);
+}
+
+function saveAnalyzedJob(jobData, showList=true) {
+  if (!pastedJobs.find(j=>j.id===jobData.id)) {
+    pastedJobs.unshift(jobData);
+    if (pastedJobs.length > 20) pastedJobs.pop();
+  }
+  if (showList) renderPastedJobs();
+}
+
+function renderPastedJobs() {
+  if (!pastedJobs.length) { el('paste-saved-section').style.display='none'; return; }
+  el('paste-saved-section').style.display='block';
+  el('paste-jobs-list').innerHTML = pastedJobs.map(j=>{
+    const color = j.match_score>=70?'var(--green)':j.match_score>=45?'var(--amber)':'var(--red)';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
+      <div style="font-size:18px;font-weight:700;color:${color};min-width:36px;text-align:center">${j.match_score||0}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500">${esc(j.title||'Role')}</div>
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--accent)">${esc(j.company||'')}</div>
+        <div style="font-size:11px;color:var(--text3)">${esc(j.apply_recommendation||'')}</div>
+      </div>
+      ${j.url?`<a class="btn-ghost" href="${esc(j.url)}" target="_blank" style="font-size:12px">Open →</a>`:''}
+    </div>`;
+  }).join('');
+}
+
+function tailorFromAnalysis(job, analysis) {
+  const jobObj = { ...job, skills: analysis.skills_matched||[], summary: job.jd||'' };
+  openTailorModal(jobObj, job.jd);
+}
+
+function clearPastedJobs() {
+  pastedJobs=[];
+  el('paste-saved-section').style.display='none';
+}
+
+// ── AI SEARCH ─────────────────────────────────────────────────────────────────
+function getSelectedRoles() { return [...document.querySelectorAll('#role-chips .chip.active')].map(c=>c.dataset.role); }
+function getSelectedCompanyTypes() { return [...document.querySelectorAll('#company-chips .chip.active')].map(c=>c.dataset.co); }
+
+function initChips() {
+  const prefs = Store.getPrefs();
+  document.querySelectorAll('#role-chips .chip').forEach(c => {
+    if ((prefs.roles||[]).includes(c.dataset.role)) c.classList.add('active');
+  });
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('active')));
+  const prefs2 = Store.getPrefs();
+  if (el('f-location')) el('f-location').value = prefs2.location||'any';
+  if (el('f-industry')) el('f-industry').value = prefs2.industry||'any';
+  if (el('f-keywords')) el('f-keywords').value = prefs2.keywords||'';
+
+  // Seen count
+  const seen = Object.keys(Store.getSeenJobs()).length;
+  if (el('seen-count')) el('seen-count').textContent = `${seen} jobs hidden from previous searches.`;
+}
+
+function saveFilters() {
+  Store.setPrefs({ roles:getSelectedRoles(), location:el('f-location').value, industry:el('f-industry').value, keywords:el('f-keywords').value.trim(), visaFilter:true });
+  showToast('Filters saved','blue');
+}
+
+function resetSeen() {
+  Store.clearSeenJobs();
+  el('seen-count').textContent='0 jobs hidden.';
+  showToast('Seen history cleared','green');
+}
+
+async function runAISearch() {
+  if (!Store.getApiKey()) {
+    el('error-banner').textContent='⚠ API key missing — go to Settings.';
+    el('error-banner').classList.add('show'); return;
+  }
+  const roles = getSelectedRoles();
+  const coTypes = getSelectedCompanyTypes();
+  if (!roles.length) { alert('Select at least one role type.'); return; }
+
+  const location = el('f-location').value;
+  const industry = el('f-industry').value;
+  const keywords = el('f-keywords').value.trim();
+  const resume   = Store.getResume();
+  const learnCtx = Store.getLearningPromptContext();
+  const seenCos  = Store.getSeenCompanies().join(', ');
+
+  el('run-btn').disabled=true;
+  el('loading-wrap').classList.add('show');
+  el('error-banner').classList.remove('show');
+  el('jobs-list').innerHTML='';
+  el('results-header').style.display='none';
+
+  const ticker = startTicker('search-ticker',[
+    'Searching LinkedIn Jobs (past 24h)...',
+    'Scanning Indeed with date filter...',
+    'Checking Handshake & Glassdoor...',
+    'Filtering out PhD/ineligible roles...',
+    'Removing duplicate postings...',
+    'Checking F1/CPT/OPT eligibility...',
+    'Scoring match against your profile...',
+  ]);
+
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const resumeSnip = resume ? resume.text.slice(0,600) : '';
+
+  const prompt = `You are a job search assistant. Today is ${today}.
+
+STUDENT PROFILE:
+- MS Business Analytics, Boston University Questrom. Graduating December 2025.
+- Visa: F1 — ONLY include companies that explicitly accept CPT/OPT/H1-B. This is a hard filter.
+- Skills: Python, SQL, R, Tableau, Power BI, Excel, statistics, data visualization, regression, ML basics
+- Degree level: Master's student (NOT PhD)
+${resumeSnip ? '- Resume skills excerpt: '+resumeSnip : ''}
+${learnCtx}
+
+SEARCH CRITERIA:
+- Roles: ${roles.join(', ')}
+- Location: ${location==='any'?'any US location or remote':location}
+- Industry: ${industry==='any'?'any':industry}
+${keywords?'- Keywords: '+keywords:''}
+- Company types wanted: ${coTypes.join(', ')||'all'}
+${seenCos?'- SKIP companies already seen recently: '+seenCos:''}
+
+HARD FILTERS — reject any role that:
+1. Requires a PhD or doctoral degree
+2. Requires more than 1 year of full-time work experience
+3. Is not specifically listed as Summer 2026 internship or summer internship
+4. Does not accept F1 visa / CPT / OPT students
+5. Is a full-time position, co-op, or apprenticeship — internship only
+6. Requires a specific undergraduate major that doesn't match business analytics
+7. Has been listed at a company in the "skip" list above
+
+FRESHNESS: Search for postings from the last 48 hours. Run multiple searches:
+- "data analyst intern summer 2026 site:linkedin.com/jobs"
+- "business analytics intern 2026 site:indeed.com"
+- "${roles[0]} internship summer 2026 F1 CPT"
+For each result you find in search, verify it meets ALL hard filters before including it.
+
+DIRECT URLS: Every URL must be the specific job posting page (linkedin.com/jobs/view/JOBID or indeed.com/viewjob?jk=JOBID). If only a generic careers page is available, do NOT include that role.
+
+QUALIFICATION CHECK: Before including any role, verify:
+✓ Says "internship" or "intern"
+✓ Says "summer 2026" or "2026 summer"  
+✓ No PhD requirement
+✓ Accepts F1/CPT/OPT (or large company that typically does)
+✓ Matches student's skills (Python/SQL/Tableau etc)
+
+Return ONLY valid JSON array — no markdown. Include 10-15 roles that pass ALL filters:
+[{
+  "id": "unique id",
+  "company": "Company Name",
+  "title": "Exact title from posting",
+  "location": "City, State or Remote",
+  "industry": "sector",
+  "url": "DIRECT posting URL with job ID",
+  "summary": "2 sentences: role description and why it specifically matches Python/SQL/Tableau skills",
+  "skills": ["skill1","skill2","skill3","skill4"],
+  "match_score": "high|medium",
+  "posted": "date if found",
+  "source": "LinkedIn|Indeed|Handshake|Company Site",
+  "visa_friendly": true,
+  "company_size": "Startup|Mid-size|Large|Enterprise"
+}]`;
+
+  try {
+    const raw = await callClaude({ prompt, useSearch:true, maxTokens:6000 });
+    clearInterval(ticker);
+    const all = extractJSON(raw);
+
+    // Client-side dedup: remove already-seen jobs
+    const fresh = all.filter(j => !Store.isJobSeen(j));
+    const total  = all.length;
+    const dupes  = total - fresh.length;
+
+    const tagged = fresh.map(j=>({...j, id:j.id||generateId()}));
+    Store.setJobs(tagged);
+    renderAIResults(tagged, dupes);
+
+  } catch(err) {
+    clearInterval(ticker);
+    el('error-banner').textContent='⚠ '+err.message;
+    el('error-banner').classList.add('show');
+    el('jobs-list').innerHTML=`<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">Search failed</div><div class="empty-desc">Check your API key in Settings and try again.</div></div></div>`;
+  } finally {
+    el('run-btn').disabled=false;
+    el('loading-wrap').classList.remove('show');
+  }
+}
+
+function renderAIResults(jobs, dupesHidden=0) {
+  el('result-count').textContent=jobs.length;
+  const ls=Store.getLastSearch();
+  el('last-search-label').textContent=ls?' · '+fmt(ls):'';
+  el('results-header').style.display='block';
+
+  if (dupesHidden>0) {
+    el('freshness-warn').textContent=`ℹ ${dupesHidden} role${dupesHidden!==1?'s':''} from previous searches hidden. Reset "seen" history in the sidebar to show them.`;
+    el('freshness-warn').style.display='block';
   } else {
-    freshnessWarn.style.display = 'none';
+    el('freshness-warn').style.display='none';
   }
 
   el('jobs-list').innerHTML = jobs.length
-    ? jobs.map(j => renderJobCard(j)).join('')
-    : `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">No results</div><div class="empty-desc">Try broadening your filters.</div></div></div>`;
+    ? jobs.map(j=>renderJobCard(j)).join('')
+    : `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">No new roles found</div><div class="empty-desc">All results were from previous searches. Reset "seen" history or try different filters.</div></div></div>`;
 }
 
 function clearResults() {
   Store.setJobs([]);
-  el('jobs-list').innerHTML = `<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">Results cleared</div><div class="empty-desc">Run a new search to find fresh roles.</div></div></div>`;
-  el('results-header').style.display = 'none';
+  el('jobs-list').innerHTML=`<div class="panel"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-title">Cleared</div></div></div>`;
+  el('results-header').style.display='none';
 }
 
-initSearch();
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function init() {
+  buildBrowseLinks();
+  initChips();
+  const cached=Store.getJobs();
+  if (cached.length) renderAIResults(cached,0);
+}
+init();
 </script>
 </body>
 </html>

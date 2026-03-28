@@ -28,12 +28,14 @@
     <div class="topbar">
       <div>
         <h1 class="page-title">Resume Tailor</h1>
-        <p class="page-sub">Upload your master resume. The AI rewrites it for each job automatically.</p>
+        <p class="page-sub">Upload your master resume. Tailoring uses a 2-step process — facts are extracted first, then rewritten. Zero fabrication.</p>
       </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
-      <!-- Left: Upload -->      <div>
+
+      <!-- Left: Upload -->
+      <div>
         <div class="section-card">
           <div class="section-card-title">
             <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M10 2v12M6 10l4-4 4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -46,13 +48,14 @@
                 <svg viewBox="0 0 40 40" width="36" height="36" fill="none"><rect x="8" y="4" width="24" height="32" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M13 13h14M13 18h14M13 23h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
               </div>
               <div class="drop-zone-title">Drop your resume here</div>
-              <div class="drop-zone-sub">Supports .txt, .pdf (text), .doc content paste</div>
+              <div class="drop-zone-sub">Best results: paste as plain text (.txt). PDF text also works.</div>
             </div>
             <input type="file" id="resume-file" accept=".txt,.pdf,.doc,.docx" style="display:none" onchange="handleFileUpload(event)">
 
-            <div style="text-align:center;margin:16px 0;font-size:12px;color:var(--text3)">— or paste resume text directly —</div>
+            <div style="text-align:center;margin:14px 0;font-size:12px;color:var(--text3)">— or paste as text directly —</div>
 
-            <textarea class="field-textarea" id="resume-paste" rows="12" placeholder="Paste your full resume text here...&#10;&#10;Name&#10;Email | Phone | LinkedIn&#10;&#10;EDUCATION&#10;Boston University — MS Business Analytics..."></textarea>
+            <textarea class="field-textarea" id="resume-paste" rows="14"
+              placeholder="Paste your full resume text here...&#10;&#10;Best format:&#10;&#10;YOUR NAME&#10;email@bu.edu | +1 (555) 000-0000 | linkedin.com/in/name | Boston, MA&#10;&#10;EDUCATION&#10;Boston University — MS Business Analytics | Dec 2025&#10;GPA: X.X | Coursework: ...&#10;&#10;EXPERIENCE&#10;Company Name | Job Title | Jun 2023 – Aug 2023&#10;• Bullet point...&#10;&#10;PROJECTS&#10;Project Name | Python, SQL&#10;• Bullet point...&#10;&#10;SKILLS&#10;Python, SQL, R, Tableau..."></textarea>
             <button class="btn-primary" style="width:100%;justify-content:center;margin-top:10px" onclick="saveResumeFromPaste()">
               Save Resume
             </button>
@@ -75,94 +78,74 @@
 
         <!-- How it works -->
         <div class="section-card" style="margin-top:16px">
-          <div class="section-card-title">How Resume Tailoring Works</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.8">
+          <div class="section-card-title">How the 2-step tailoring works</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.85">
             <div style="display:flex;gap:10px;margin-bottom:10px">
               <span style="color:var(--accent);font-family:var(--font-mono);font-size:11px;flex-shrink:0;margin-top:2px">01</span>
-              <span>Upload your full master resume with all experience and skills</span>
+              <span><strong style="color:var(--text)">Extraction pass</strong> — AI copies every fact from your resume verbatim into a structured JSON. No generation at this stage.</span>
             </div>
             <div style="display:flex;gap:10px;margin-bottom:10px">
               <span style="color:var(--accent);font-family:var(--font-mono);font-size:11px;flex-shrink:0;margin-top:2px">02</span>
-              <span>On the Job Search page, click <strong style="color:var(--text)">✦ Tailor Resume</strong> on any role</span>
+              <span><strong style="color:var(--text)">Tailoring pass</strong> — AI receives ONLY the extracted JSON (not your raw resume). It selects, reorders, and rewrites in STAR format using only what's in the JSON.</span>
             </div>
             <div style="display:flex;gap:10px;margin-bottom:10px">
-              <span style="color:var(--accent);font-family:var(--font-mono);font-size:11px;flex-shrink:0;margin-top:2px">03</span>
-              <span>The AI rewrites your resume to match that specific job description</span>
+              <span style="color:var(--green);font-size:14px;flex-shrink:0">✓</span>
+              <span>Cannot invent facts — it only has access to what was extracted</span>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:10px">
+              <span style="color:var(--green);font-size:14px;flex-shrink:0">✓</span>
+              <span>Every bullet rewritten in STAR format (Action → Result)</span>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:10px">
+              <span style="color:var(--green);font-size:14px;flex-shrink:0">✓</span>
+              <span>JD keywords mirrored where your real experience supports them</span>
             </div>
             <div style="display:flex;gap:10px">
-              <span style="color:var(--accent);font-family:var(--font-mono);font-size:11px;flex-shrink:0;margin-top:2px">04</span>
-              <span>Copy the tailored version and paste into your Word doc or PDF template</span>
+              <span style="color:var(--blue);font-size:14px;flex-shrink:0">↓</span>
+              <span>Output renders as a formatted resume with <strong style="color:var(--text)">Download PDF</strong> button</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Right: Tailor on demand -->
+      <!-- Right: Custom tailor -->
       <div>
         <div class="section-card">
           <div class="section-card-title">
             <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M3 10l5 5L17 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Tailor for a Custom Job
+            Tailor for a Specific Job
           </div>
-          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.7">Paste a job description to tailor your resume right now. The AI will only use your existing experience — no fabrication.</p>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7">Paste any job description below and get a tailored resume in under 60 seconds. Also accessible via the "✦ Tailor" button on any job card.</p>
 
           <div class="field-group">
-            <div class="field-label">Company Name</div>
+            <div class="field-label">Company</div>
             <input type="text" class="field-input" id="custom-company" placeholder="e.g. Amazon">
           </div>
           <div class="field-group">
             <div class="field-label">Job Title</div>
-            <input type="text" class="field-input" id="custom-title" placeholder="e.g. Business Analyst Intern">
+            <input type="text" class="field-input" id="custom-title" placeholder="e.g. Business Analyst Intern — Summer 2026">
           </div>
           <div class="field-group">
             <div class="field-label">Job Description</div>
-            <textarea class="field-textarea" id="custom-jd" rows="10" placeholder="Paste the full job description here..."></textarea>
+            <textarea class="field-textarea" id="custom-jd" rows="12" placeholder="Paste the full job description here — the more detail, the better the tailoring..."></textarea>
           </div>
           <button class="btn-primary" style="width:100%;justify-content:center" id="tailor-custom-btn" onclick="tailorCustom()">
             ✦ Generate Tailored Resume
           </button>
         </div>
-
-        <!-- How it works -->
-        <div class="section-card" style="margin-top:16px">
-          <div class="section-card-title">What the AI does (and doesn't do)</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.85">
-            <div style="display:flex;gap:10px;margin-bottom:8px">
-              <span style="color:var(--green);font-size:14px;flex-shrink:0">✓</span>
-              <span>Rewrites bullet points in <strong style="color:var(--text)">STAR format</strong> (Situation → Action → Result)</span>
-            </div>
-            <div style="display:flex;gap:10px;margin-bottom:8px">
-              <span style="color:var(--green);font-size:14px;flex-shrink:0">✓</span>
-              <span>Reorders sections and bullets to front-load the most relevant experience</span>
-            </div>
-            <div style="display:flex;gap:10px;margin-bottom:8px">
-              <span style="color:var(--green);font-size:14px;flex-shrink:0">✓</span>
-              <span>Mirrors keywords from the job description for ATS optimization</span>
-            </div>
-            <div style="display:flex;gap:10px;margin-bottom:8px">
-              <span style="color:var(--green);font-size:14px;flex-shrink:0">✓</span>
-              <span>Cuts irrelevant content to keep it to exactly 1 page</span>
-            </div>
-            <div style="display:flex;gap:10px;margin-bottom:8px">
-              <span style="color:var(--red);font-size:14px;flex-shrink:0">✕</span>
-              <span>Will NOT add any company, project, tool, or metric not already in your resume</span>
-            </div>
-            <div style="display:flex;gap:10px">
-              <span style="color:var(--blue);font-size:14px;flex-shrink:0">↓</span>
-              <span>Output renders as a formatted resume with a <strong style="color:var(--text)">Download PDF</strong> button</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- Output panel — full width below -->
+    <!-- Output — full width -->
     <div id="custom-tailor-result" style="margin-top:24px;display:none">
       <div class="section-card">
-        <div class="panel-header" style="padding:0 0 14px 0;border-bottom:1px solid var(--border);margin-bottom:18px">
-          <span class="panel-title" id="tailor-result-title">Tailored Resume</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:16px">
+          <div>
+            <div class="panel-title" id="tailor-result-title">Tailored Resume</div>
+            <div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);margin-top:3px">Generated from your uploaded resume only — no added content</div>
+          </div>
           <div style="display:flex;gap:8px">
-            <button class="btn-ghost" style="font-size:12px" onclick="copyCustomTailored()">Copy plain text</button>
+            <button class="btn-ghost" style="font-size:12px" onclick="copyCustomText()">Copy plain text</button>
             <button class="btn-secondary" style="font-size:12px" onclick="downloadCustomPDF()">
               <svg viewBox="0 0 16 16" width="12" height="12" fill="none"><path d="M3 12h10M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Download PDF
@@ -170,13 +153,13 @@
           </div>
         </div>
 
-        <div id="custom-loading" class="loading-wrap" style="padding:32px;display:none">
-          <div class="spinner"></div>
-          <div class="loading-msg">Tailoring — strictly using only your existing experience...</div>
+        <div id="custom-loading" style="display:none;text-align:center;padding:40px">
+          <div class="spinner" style="margin:0 auto 14px"></div>
+          <div class="loading-msg" id="custom-step-label">Step 1 of 2 — Extracting facts from your resume...</div>
           <div class="loading-ticker" id="custom-ticker"></div>
         </div>
 
-        <div id="custom-resume-render" style="background:#fff;color:#111;padding:36px 40px;border-radius:8px;font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4;border:1px solid #ddd;display:none"></div>
+        <div id="custom-resume-render" style="background:#fff;color:#111;padding:32px 36px;border-radius:8px;border:1px solid #ddd;display:none"></div>
       </div>
     </div>
   </main>
@@ -187,166 +170,143 @@
   <div class="modal" style="max-width:700px">
     <button class="modal-close" onclick="el('preview-modal').classList.remove('show')">✕</button>
     <div class="modal-title">Resume Preview</div>
-    <div style="margin-top:16px">
-      <pre class="tailored-resume-output" id="preview-text"></pre>
-    </div>
+    <div style="margin-top:16px"><pre class="tailored-resume-output" id="preview-text"></pre></div>
   </div>
 </div>
 
 <script src="../js/storage.js"></script>
 <script src="../js/app.js"></script>
 <script>
+// ── UPLOAD ───────────────────────────────────────────────────────────────────
 function initResumePage() {
   const resume = Store.getResume();
   if (resume) showSavedState(resume);
 
-  // Drag and drop
   const dz = el('drop-zone');
   dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
   dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
   dz.addEventListener('drop', e => {
     e.preventDefault(); dz.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) processFile(file);
+    if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
   });
 }
 
-function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (file) processFile(file);
-}
+function handleFileUpload(e) { if (e.target.files[0]) processFile(e.target.files[0]); }
 
 function processFile(file) {
   const reader = new FileReader();
-  reader.onload = (e) => {
-    const text = e.target.result;
-    saveResume(text, file.name);
-  };
+  reader.onload = (e) => saveResume(e.target.result, file.name);
   reader.readAsText(file);
 }
 
 function saveResumeFromPaste() {
   const text = el('resume-paste').value.trim();
-  if (!text || text.length < 100) { alert('Please paste your full resume text (at least 100 characters).'); return; }
+  if (!text || text.length < 100) { alert('Please paste your full resume text (at least a few lines).'); return; }
   saveResume(text, 'Pasted Resume');
 }
 
 function saveResume(text, name) {
-  const obj = {
-    text,
-    name,
-    wordCount: text.split(/\s+/).length,
-    uploadedAt: new Date().toISOString(),
-  };
-  Store.setResume(obj);
+  const obj = { text, name, wordCount: text.split(/\s+/).length, uploadedAt: new Date().toISOString() };
+  Store.setResume(obj); // Also clears cached parsed facts
   showSavedState(obj);
+  showToast('Resume saved — parsed facts cache cleared','green');
 }
 
 function showSavedState(resume) {
-  el('upload-zone').style.display = 'none';
-  el('resume-saved').style.display = 'block';
-  el('resume-saved-name').textContent = resume.name;
-  el('resume-saved-meta').textContent = `${resume.wordCount} words · Uploaded ${fmt(resume.uploadedAt)}`;
+  el('upload-zone').style.display='none';
+  el('resume-saved').style.display='block';
+  el('resume-saved-name').textContent=resume.name;
+  el('resume-saved-meta').textContent=`${resume.wordCount} words · Saved ${fmt(resume.uploadedAt)}`;
 }
 
 function replaceResume() {
   el('resume-paste').value = Store.getResume()?.text || '';
-  el('upload-zone').style.display = 'block';
-  el('resume-saved').style.display = 'none';
+  el('upload-zone').style.display='block';
+  el('resume-saved').style.display='none';
 }
 
 function previewResume() {
   const resume = Store.getResume();
   if (!resume) return;
-  el('preview-text').textContent = resume.text;
+  el('preview-text').textContent=resume.text;
   el('preview-modal').classList.add('show');
 }
 
+// ── CUSTOM TAILOR ─────────────────────────────────────────────────────────────
+let _customData=null, _customJob=null, _customText='';
+
 async function tailorCustom() {
   const resume = Store.getResume();
-  if (!resume) { alert('Please upload your master resume first.'); return; }
+  if (!resume) { alert('Upload your master resume first.'); return; }
   if (!Store.getApiKey()) { alert('API key missing — go to Settings.'); return; }
 
   const company = el('custom-company').value.trim();
   const title   = el('custom-title').value.trim();
   const jd      = el('custom-jd').value.trim();
 
-  if (!jd || jd.length < 50) { alert('Please paste a job description (at least 50 characters).'); return; }
+  if (!jd || jd.length < 60) { alert('Please paste the full job description.'); return; }
 
-  const job = { company, title, skills: [], summary: jd };
+  const job = { company, title, skills:[], summary:jd };
 
-  el('custom-tailor-result').style.display = 'block';
-  el('custom-loading').style.display = 'block';
-  el('custom-resume-render').style.display = 'none';
-  el('tailor-result-title').textContent = `${title || 'Tailored Resume'} — ${company || 'Custom Role'}`;
-  el('tailor-custom-btn').disabled = true;
-  window._customJob = job;
+  el('custom-tailor-result').style.display='block';
+  el('custom-loading').style.display='block';
+  el('custom-resume-render').style.display='none';
+  el('tailor-result-title').textContent=`${title||'Tailored Resume'}${company?' — '+company:''}`;
+  el('tailor-custom-btn').disabled=true;
+  _customJob=job;
 
-  const ticker = startTicker('custom-ticker', [
-    'Reading your resume carefully...',
-    'Matching your experience to the JD...',
+  if (el('custom-step-label')) el('custom-step-label').textContent='Step 1 of 2 — Extracting facts from your resume...';
+
+  const ticker = startTicker('custom-ticker',[
+    'Reading every line of your resume...',
+    'Copying facts verbatim — no invention...',
+    'Step 2 — Selecting relevant experience...',
     'Rewriting bullets in STAR format...',
-    'Cutting irrelevant content...',
-    'Optimizing ATS keywords...',
-    'Final check — no fabrication...',
+    'Removing irrelevant sections...',
+    'Mirroring JD keywords where applicable...',
   ]);
 
-  try {
-    const raw = await callClaude({ prompt: buildTailorPrompt(resume, job, jd), useSearch: false, maxTokens: 3000 });
-    clearInterval(ticker);
-
-    let data;
-    try {
-      const jsonMatch = raw.match(/\{[\s\S]*\}/);
-      data = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-    } catch(e) { data = null; }
-
-    if (data) {
-      window._customData = data;
-      window._customRawText = renderResumeText(data);
-      el('custom-resume-render').innerHTML = renderResumeHTML(data, job);
-    } else {
-      window._customData = null;
-      window._customRawText = raw;
-      el('custom-resume-render').innerHTML = `<pre style="font-family:monospace;font-size:10pt;white-space:pre-wrap">${esc(raw)}</pre>`;
+  runTailor(resume, job, jd,
+    (data) => {
+      clearInterval(ticker);
+      _customData=data; _customText=renderResumeText(data);
+      el('custom-loading').style.display='none';
+      el('custom-resume-render').innerHTML=renderResumeHTML(data, job);
+      el('custom-resume-render').style.display='block';
+      el('tailor-custom-btn').disabled=false;
+    },
+    (err) => {
+      clearInterval(ticker);
+      el('custom-tailor-result').style.display='none';
+      el('tailor-custom-btn').disabled=false;
+      alert('Tailoring failed: '+err.message);
     }
-    el('custom-loading').style.display = 'none';
-    el('custom-resume-render').style.display = 'block';
-
-  } catch(err) {
+  ).catch(err => {
     clearInterval(ticker);
-    alert('Error: ' + err.message);
-    el('custom-tailor-result').style.display = 'none';
-  } finally {
-    el('tailor-custom-btn').disabled = false;
-  }
+    el('custom-tailor-result').style.display='none';
+    el('tailor-custom-btn').disabled=false;
+    alert('Tailoring failed: '+err.message);
+  });
 }
 
-function copyCustomTailored() {
-  const text = window._customRawText || '';
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = event.target;
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = 'Copy plain text', 1500);
-  });
+function copyCustomText() {
+  navigator.clipboard.writeText(_customText||'').then(()=>showToast('Copied to clipboard','blue'));
 }
 
 function downloadCustomPDF() {
   const content = el('custom-resume-render');
-  if (!content || content.style.display === 'none') { alert('Generate a resume first.'); return; }
-  const job = window._customJob || {};
-  const name = (window._customData?.name || 'Resume').replace(/\s+/g,'_');
-  const company = (job.company || 'Role').replace(/\s+/g,'_');
-  const printWin = window.open('', '_blank', 'width=800,height=1000');
-  printWin.document.write(`<!DOCTYPE html><html><head><title>${name}_${company}</title>
+  if (!content||content.style.display==='none') { alert('Generate a resume first.'); return; }
+  const name = ((_customData?.name||'Resume')+'_'+(_customJob?.company||'Role')).replace(/\s+/g,'_');
+  const win = window.open('','_blank','width=860,height=1100');
+  win.document.write(`<!DOCTYPE html><html><head><title>${name}</title>
     <style>
-      @page { margin: 0.6in 0.65in; size: letter; }
-      body { font-family: Georgia, serif; font-size: 11pt; color: #111; margin: 0; -webkit-print-color-adjust: exact; }
+      @page{margin:.65in .7in;size:letter}
+      body{font-family:Arial,sans-serif;font-size:10.5pt;color:#111;margin:0}
+      strong{font-weight:700}
     </style>
   </head><body>${content.innerHTML}</body></html>`);
-  printWin.document.close();
-  printWin.focus();
-  setTimeout(() => { printWin.print(); printWin.close(); }, 400);
+  win.document.close(); win.focus();
+  setTimeout(()=>{ win.print(); }, 500);
 }
 
 initResumePage();
